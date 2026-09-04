@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>KIO — 키오스크 시뮬레이터</title>
+<meta name="description" content="실제 매장 키오스크의 UX를 웹으로 재현하고 개선한 시뮬레이터. 프리셋 · 자유 편집 · 모의 결제.">
+<meta name="theme-color" content="#14181C">
+<meta name="color-scheme" content="light">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/customer.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<div class="desk">
+  <div class="device" id="device" data-framed="true">
+    <div class="stage-wrap" id="stageWrap">
+      <div class="stage" id="stage">
+
+        <main class="screens" id="screens">
+
+          <!-- ============================================
+               1. 대기 화면
+               ============================================ -->
+          <section class="screen idle" data-screen="idle" aria-label="대기 화면">
+            <div class="idle__bg" id="idleBg"></div>
+            <div class="idle__veil"></div>
+
+            <div class="idle__inner">
+              <button class="idle__brand" id="brandTap" type="button" aria-label="매장 로고">
+                <span class="idle__logo" id="idleLogo">K</span>
+                <span>
+                  <span class="idle__name" id="idleName">KIO 스토어</span>
+                  <span class="idle__tag" id="idleTag">Self Order</span>
+                </span>
+              </button>
+
+              <div class="idle__mid">
+                <span class="idle__kicker" id="idleKicker">화면을 눌러 시작</span>
+                <h1 class="idle__title" id="idleTitle">주문을 시작해 볼까요?</h1>
+                <p class="idle__lede" id="idleLede"></p>
+              </div>
+
+              <div class="idle__foot">
+                <div class="idle__cta">
+                  <button class="btn btn--primary btn--hero" id="startBtn" type="button">
+                    주문 시작하기
+                    <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+                  </button>
+                  <button class="idle__big" id="idleBigText" type="button" aria-pressed="false" aria-label="큰 글씨 모드">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
+                    <span>큰 글씨</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================
+               2. 주문 유형
+               ============================================ -->
+          <section class="screen otype" data-screen="ordertype" aria-label="주문 유형 선택">
+            <header class="item__bar">
+              <button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 18l-6-6 6-6"/></svg>
+              </button>
+              <span class="item__bartitle" id="otypeStore">KIO 스토어</span>
+              <button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
+              </button>
+            </header>
+
+            <div class="otype__inner">
+              <div>
+                <h2 class="otype__ask">어디에서 드시나요?</h2>
+                <p class="otype__sub">포장은 일부 메뉴 구성이 달라질 수 있습니다.</p>
+              </div>
+
+              <div class="otype__pair">
+                <button class="ocard" data-otype="dinein" type="button">
+                  <span class="ocard__ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11h18a9 9 0 0 1-9 9 9 9 0 0 1-9-9Z"/><path d="M12 11V7m0 0a2 2 0 1 1 2-2"/><path d="M2 22h20"/></svg>
+                  </span>
+                  <span class="ocard__nm">매장에서 식사</span>
+                  <span class="ocard__ds">매장에서 드시고 가세요</span>
+                </button>
+
+                <button class="ocard" data-otype="takeout" type="button">
+                  <span class="ocard__ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M4 8h16"/></svg>
+                  </span>
+                  <span class="ocard__nm">포장</span>
+                  <span class="ocard__ds">가지고 나가세요</span>
+                </button>
+              </div>
+
+              <p class="otype__note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 18l-6-6 6-6"/></svg>
+                잘못 눌러도 왼쪽 위 화살표로 돌아올 수 있어요.
+              </p>
+            </div>
+          </section>
+
+          <!-- ============================================
+               3. 메뉴 (rail + grid + paybar)
+               ============================================ -->
+          <section class="screen shop" data-screen="menu" aria-label="메뉴">
+            <header class="shop__head">
+              <div class="shop__brand">
+                <span class="shop__mark" id="shopMark">K</span>
+                <span class="shop__store" id="shopStore">KIO 스토어</span>
+              </div>
+              <div class="shop__title">
+                <h2 class="shop__h" id="shopH">추천메뉴</h2>
+                <span class="shop__count num" id="shopCount"></span>
+                <span class="shop__mode" id="shopMode">매장 식사</span>
+              </div>
+              <div class="shop__tools">
+                <button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
+                </button>
+              </div>
+            </header>
+
+            <div class="shop__body">
+              <nav class="rail" id="rail" aria-label="카테고리"></nav>
+              <div class="scroller shop__main" id="shopMain"></div>
+            </div>
+
+            <footer class="paybar" id="payBar"></footer>
+          </section>
+
+          <!-- ============================================
+               4. 상품 상세
+               ============================================ -->
+          <section class="screen item" data-screen="item" aria-label="상품 선택">
+            <div class="mount" id="itemMount"></div>
+          </section>
+
+          <!-- ============================================
+               5. 장바구니
+               ============================================ -->
+          <section class="screen cart" data-screen="cart" aria-label="주문 내역">
+            <header class="item__bar">
+              <button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 18l-6-6 6-6"/></svg>
+              </button>
+              <span class="item__bartitle">주문 내역</span>
+              <span class="shop__count num" id="cartCount"></span>
+              <button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
+              </button>
+            </header>
+
+            <div class="scroller cart__scroll" id="cartScroll"></div>
+            <footer class="cart__foot" id="cartFoot"></footer>
+          </section>
+
+          <!-- ============================================
+               6. 결제
+               ============================================ -->
+          <section class="screen pay" data-screen="pay" aria-label="결제">
+            <div class="mount" id="payMount"></div>
+          </section>
+
+          <!-- ============================================
+               7. 주문 완료
+               ============================================ -->
+          <section class="screen done" data-screen="done" aria-label="주문 완료">
+            <div class="scroller done__scroll" id="doneMount"></div>
+          </section>
+
+          <!-- ============================================
+               관리자 PIN
+               ============================================ -->
+          <section class="screen pin" data-screen="pin" aria-label="관리자 인증">
+            <div class="pin__inner" id="pinInner">
+              <span class="label">Admin</span>
+              <h2 class="pin__title">관리자 인증</h2>
+              <p class="pin__desc">편집 모드로 들어가려면 PIN 4자리를 입력하세요.<br><span class="muted-2">초기 PIN은 0000 입니다.</span></p>
+              <div class="pin__dots" id="pinDots" role="status" aria-label="입력한 자릿수">
+                <span class="pin__dot"></span><span class="pin__dot"></span>
+                <span class="pin__dot"></span><span class="pin__dot"></span>
+              </div>
+              <div class="pin__pad" id="pinPad">
+                <button class="pin__key num" data-key="1" type="button">1</button>
+                <button class="pin__key num" data-key="2" type="button">2</button>
+                <button class="pin__key num" data-key="3" type="button">3</button>
+                <button class="pin__key num" data-key="4" type="button">4</button>
+                <button class="pin__key num" data-key="5" type="button">5</button>
+                <button class="pin__key num" data-key="6" type="button">6</button>
+                <button class="pin__key num" data-key="7" type="button">7</button>
+                <button class="pin__key num" data-key="8" type="button">8</button>
+                <button class="pin__key num" data-key="9" type="button">9</button>
+                <button class="pin__key pin__key--util" data-key="cancel" type="button" aria-label="취소">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+                <button class="pin__key num" data-key="0" type="button">0</button>
+                <button class="pin__key pin__key--util" data-key="back" type="button" aria-label="지우기">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 5H9.5L3 12l6.5 7H20a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1Z"/><path d="M17 9.5 12.5 14M12.5 9.5 17 14"/></svg>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============================================
+               관리자 편집 모드
+               ============================================ -->
+          <section class="screen admin" data-screen="admin" aria-label="편집 모드">
+            <header class="admin__bar">
+              <span class="admin__mark">
+                <span class="admin__name" id="adminStoreName">KIO 스토어</span>
+                <span class="admin__sub">Edit mode</span>
+              </span>
+              <span class="admin__save"><i></i> 자동 저장</span>
+              <button class="admin__exit" data-act="admin-exit" type="button">나가기</button>
+            </header>
+
+            <div class="admin__body">
+              <nav class="admin__rail" id="adminNav" aria-label="편집 섹션"></nav>
+              <div class="scroller admin__panel" id="adminPanel"></div>
+            </div>
+          </section>
+
+        </main>
+
+        <div class="layer layer--sheet" id="sheetLayer"></div>
+        <div class="layer layer--modal" id="modalLayer"></div>
+        <div class="layer layer--toast" id="toastLayer">
+          <div class="toast-stack" id="toastStack"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="rotate-hint">
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>
+  세로로 돌리면 더 크게 보입니다
+</div>
+
+<input type="file" class="file-input" id="filePicker" accept="image/png,image/jpeg,image/webp,image/gif">
+
+<script src="js/presets.js"></script>
+<script src="js/store.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/customer.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

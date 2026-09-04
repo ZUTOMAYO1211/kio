@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 편집기
+.idea/
+.vscode/
+*.swp
+
+# 로그 · 임시
+*.log
+node_modules/

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<title>KIO — 키오스크 시뮬레이터</title>
+<title>KIO 키오스크 시뮬레이터</title>
 <meta name="description" content="실제 매장 키오스크의 UX를 웹으로 재현하고 개선한 시뮬레이터. 프리셋 · 자유 편집 · 모의 결제.">
 <meta name="theme-color" content="#14181C">
 <meta name="color-scheme" content="light">
@@ -30,35 +30,32 @@
         <main class="screens" id="screens">
 
           <!-- ============================================
-               1. 대기 화면
+               1. 대기 화면 (Attract)
                ============================================ -->
-          <section class="screen idle" data-screen="idle" aria-label="대기 화면">
-            <div class="idle__bg" id="idleBg"></div>
-            <div class="idle__veil"></div>
+          <section class="screen attract" data-screen="idle" aria-label="대기 화면">
+            <div class="attract__bg" id="attractBg" aria-hidden="true"></div>
+            <div class="attract__veil" aria-hidden="true"></div>
 
-            <div class="idle__inner">
-              <button class="idle__brand" id="brandTap" type="button" aria-label="매장 로고">
-                <span class="idle__logo" id="idleLogo">K</span>
+            <div class="attract__inner">
+              <button class="attract__brand" id="brandTap" type="button" aria-label="매장 로고">
+                <span class="attract__mark" id="attractMark">K</span>
                 <span>
-                  <span class="idle__name" id="idleName">KIO 스토어</span>
-                  <span class="idle__tag" id="idleTag">Self Order</span>
+                  <span class="attract__name" id="attractName">KIO 스토어</span>
+                  <span class="attract__tag" id="attractTag">Self Order</span>
                 </span>
               </button>
 
-              <div class="idle__mid">
-                <span class="idle__kicker" id="idleKicker">화면을 눌러 시작</span>
-                <h1 class="idle__title" id="idleTitle">주문을 시작해 볼까요?</h1>
-                <p class="idle__lede" id="idleLede"></p>
-              </div>
+              <div class="attract__say">
+                <h1 class="attract__title" id="attractTitle">주문을 시작해 볼까요?</h1>
+                <p class="attract__lede" id="attractLede"></p>
 
-              <div class="idle__foot">
-                <div class="idle__cta">
-                  <button class="btn btn--primary btn--hero" id="startBtn" type="button">
+                <div class="attract__act">
+                  <button class="attract__go" id="startBtn" type="button">
                     주문 시작하기
-                    <svg viewBox="0 0 24 24" width="52" height="52" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
                   </button>
-                  <button class="idle__big" id="idleBigText" type="button" aria-pressed="false" aria-label="큰 글씨 모드">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
+                  <button class="attract__big" id="attractBig" type="button" aria-pressed="false" aria-label="큰 글씨 모드">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
                     <span>큰 글씨</span>
                   </button>
                 </div>

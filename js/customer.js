@@ -414,7 +414,7 @@
     clearDoneTimer();
     if (!order) return;
 
-    var method = { card: '신용 · 체크카드', easy: '간편결제', cash: '현금' }[order.method] || '—';
+    var method = { card: '신용 · 체크카드', easy: '간편결제', cash: '현금' }[order.method] || '기타';
     var d = new Date(order.at);
     var stamp = d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()) +
       ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());

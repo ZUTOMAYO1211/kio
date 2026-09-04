@@ -561,7 +561,7 @@
       var d = new Date(o.at);
       var stamp = (d.getMonth() + 1) + '/' + d.getDate() + ' ' +
         ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
-      var method = { card: '카드', easy: '간편결제', cash: '현금' }[o.method] || '—';
+      var method = { card: '카드', easy: '간편결제', cash: '현금' }[o.method] || '기타';
 
       return '<div class="olog" style="--i:' + Math.min(i, 12) + '">' +
         '<div class="olog__top">' +

@@ -27,6 +27,17 @@
     var c = hex2rgb(h);
     return 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',' + a + ')';
   }
+  /* WCAG 상대 휘도. 어두운 대기 화면 위에서 액센트 CTA 가 배경에
+     묻히는지 판단하는 데 쓴다. */
+  function luminance(hex) {
+    var c = hex2rgb(hex);
+    var f = function (v) {
+      v /= 255;
+      return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * f(c.r) + 0.7152 * f(c.g) + 0.0722 * f(c.b);
+  }
+
   function mix(a, b, t) {
     var x = hex2rgb(a), y = hex2rgb(b);
     var f = function (p, q) { return Math.round(p + (q - p) * t); };
@@ -89,57 +100,97 @@
   }
 
   /* =========================================================
-     3. 대기 화면
+     3. 대기 화면 (Attract)
+
+     배경은 그 매장의 실제 메뉴로 만든다. 매장이 시작 화면
+     이미지를 지정했으면 그게 이긴다. 메뉴가 너무 적으면
+     테마 색으로 만든 필드로 물러난다.
      ========================================================= */
+  var WALL_COLS = 4;
+  var WALL_MIN = 4;          /* 이보다 적으면 벽이 반복만 하므로 폴백 */
+  var WALL_PER_COL = 6;
+
   function renderIdle() {
     var s = Store.config.store;
+    var bg = $('#attractBg');
 
-    /* 인라인 onerror 로 부모의 innerHTML 을 비우면 그 자신이 분리되어
-       parentNode 가 null 이 된다. 핸들러를 JS 로 잡아서 폴백을 보장한다. */
-    var bg = $('#idleBg');
     bg.innerHTML = '';
     if (s.heroImage) {
+      /* 인라인 onerror 로 부모를 비우면 자기 자신이 분리되어 parentNode 가
+         null 이 된다. 핸들러를 JS 로 잡아 폴백을 보장한다. */
       var img = new Image();
       img.alt = '';
-      img.onerror = function () { bg.innerHTML = ''; bg.appendChild(idleArt()); };
+      img.onerror = function () { bg.innerHTML = ''; paintBackdrop(bg); };
       img.src = s.heroImage;
       bg.appendChild(img);
     } else {
-      bg.appendChild(idleArt());
+      paintBackdrop(bg);
     }
 
-    var logo = $('#idleLogo');
+    var mark = $('#attractMark');
     var initial = Store.glyphFor(s.name);
     if (s.logo) {
-      logo.innerHTML = '';
+      mark.innerHTML = '';
       var li = new Image();
       li.alt = '';
-      li.onerror = function () { logo.textContent = initial; };
+      li.onerror = function () { mark.textContent = initial; };
       li.src = s.logo;
-      logo.appendChild(li);
+      mark.appendChild(li);
     } else {
-      logo.textContent = initial;
+      mark.textContent = initial;
     }
 
-    $('#idleName').textContent = s.name;
-    $('#idleTag').textContent = s.tagline;
-    $('#idleTitle').innerHTML = UI.nl2br(s.headline);
+    /* 액센트가 너무 어두우면(차콜 테마 등) 잉크 배경 위에서 CTA 가
+       사라진다. 그럴 때만 밝은 버튼으로 바꾼다. 액센트는 로고 마크에
+       그대로 남아 브랜드가 유지된다. */
+    $('[data-screen="idle"]').classList.toggle('attract--lightcta', luminance(theme().accent) < 0.13);
 
-    var lede = $('#idleLede');
+    $('#attractName').textContent = s.name;
+    $('#attractTag').textContent = s.tagline;
+    $('#attractTitle').innerHTML = UI.nl2br(s.headline);
+
+    var lede = $('#attractLede');
     lede.textContent = s.lede;
     lede.style.display = s.lede ? '' : 'none';
 
     $('#otypeStore').textContent = s.name;
   }
 
-  /* 시작 화면 이미지가 없을 때의 기본 그래픽 — 테마 색에서 만든다 */
-  function idleArt() {
+  function paintBackdrop(bg) {
+    var menus = Store.config.menus;
+    if (menus.length >= WALL_MIN) bg.appendChild(menuWall(menus));
+    else bg.appendChild(themeField());
+  }
+
+  /* 메뉴 타일을 세 열로 흘린다. 각 열은 자기 자신을 한 번 더 이어 붙여
+     -50% 지점에서 이음매 없이 되감긴다. */
+  function menuWall(menus) {
+    var wall = document.createElement('div');
+    wall.className = 'attract__wall';
+
+    var pool = menus.slice();
+    for (var c = 0; c < WALL_COLS; c++) {
+      var col = document.createElement('div');
+      col.className = 'attract__col';
+
+      var half = '';
+      for (var i = 0; i < WALL_PER_COL; i++) {
+        var m = pool[(c * WALL_PER_COL + i) % pool.length];
+        half += UI.thumb(m.name, m.image, { className: 'attract__tile', glyph: 38 });
+      }
+      col.innerHTML = half + half;   /* 이음매 없는 루프용 복제 */
+      wall.appendChild(col);
+    }
+    return wall;
+  }
+
+  function themeField() {
     var t = theme();
     var el = document.createElement('div');
-    el.className = 'idle__art';
-    el.style.setProperty('--art-a', mix(t.accent, '#FFFFFF', 0.22));
+    el.className = 'attract__field';
+    el.style.setProperty('--art-a', mix(t.accent, '#FFFFFF', 0.42));
     el.style.setProperty('--art-base', t.accent);
-    el.style.setProperty('--art-b', mix(t.deep, '#0C0F12', 0.55));
+    el.style.setProperty('--art-b', mix(t.deep, '#0B0E11', 0.34));
     return el;
   }
 
@@ -226,7 +277,7 @@
   function applyLargeText() {
     var on = !!Store.prefs.largeText;
     stage.classList.toggle('is-large', on);
-    $$('[data-act="toggle-big"], #idleBigText').forEach(function (b) {
+    $$('[data-act="toggle-big"], #attractBig').forEach(function (b) {
       b.setAttribute('aria-pressed', String(on));
       b.classList.toggle('is-on', on);
     });
@@ -375,7 +426,7 @@
 
     $('#brandTap').addEventListener('click', onBrandTap);
     $('#startBtn').addEventListener('click', startOrder);
-    $('#idleBigText').addEventListener('click', toggleLargeText);
+    $('#attractBig').addEventListener('click', toggleLargeText);
     $('#pinPad').addEventListener('click', function (e) {
       var t = e.target.closest('[data-key]');
       if (t) onPinKey(t.getAttribute('data-key'));

@@ -6,126 +6,211 @@
 
 /* ============================================================
    1. 대기(Attract)
-   Signage at rest: one plate, one name, one instruction.
+
+   이 화면의 일은 하나다: 첫 터치를 받는 것.
+   배경은 그라데이션이 아니라 그 매장의 실제 메뉴로 만든 벽이다.
+   사진이 있으면 사진이, 없으면 생성 아트가 흐른다. 저장소에
+   이미지를 넣지 않고도 진짜 비주얼이 서고, 메뉴를 고치면 따라온다.
    ============================================================ */
-.idle { background: var(--ink); }
-.idle__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-.idle__bg img, .idle__art { width: 100%; height: 100%; object-fit: cover; }
-.idle__art {
-  background:
-    linear-gradient(152deg, var(--art-a) 0%, var(--art-base) 52%, var(--art-b) 100%);
+.attract { background: var(--ink); }
+
+/* -- 메뉴 벽 --------------------------------------------------
+   3열이 서로 다른 속도로 아주 천천히 흐른다. 모션의 동기는
+   하나다: "안에 메뉴가 있다"고 말하는 것. 그 외 장식 모션은 없다. */
+.attract__wall {
+  position: absolute;
+  inset: -16% -12%;
+  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  transform: rotate(-5deg) scale(1.06);
+  /* 베일이 가독성을 맡으므로 벽은 조금 밝게 둬야 접시로 읽힌다 */
+  filter: brightness(1.14) saturate(1.06);
 }
-.idle__veil {
+.attract__col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* 타일 n개 사이의 gap 은 n-1 개다. 아래에 gap 하나를 더 붙여야
+     -50% 지점이 정확히 한 주기와 맞아 이음매가 안 보인다. */
+  padding-bottom: 16px;
+  will-change: transform;
+  animation: wall-up 92s linear infinite;
+}
+.attract__col:nth-child(2) { animation-name: wall-down; animation-duration: 118s; }
+.attract__col:nth-child(3) { animation-duration: 104s; }
+.attract__col:nth-child(4) { animation-name: wall-down; animation-duration: 132s; }
+@keyframes wall-up {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -50%, 0); }
+}
+@keyframes wall-down {
+  from { transform: translate3d(0, -50%, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+.attract__tile {
+  flex: 0 0 auto;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+/* 벽에서는 머리글자가 '글자'로 읽히면 안 된다. 질감까지만. */
+.attract__tile .thumb__glyph {
+  color: rgba(255, 255, 255, .30);
+  text-shadow: none;
+}
+
+/* 메뉴가 너무 적은 매장(빈 템플릿 등)용 폴백 */
+/* 메뉴가 없는 매장의 빈 상태. 검은 공백이 아니라 형태가 있는 면으로.
+   문구가 무엇을 해야 하는지 알려 준다. */
+.attract__field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(72% 46% at 78% 12%, rgba(255, 255, 255, .16) 0%, transparent 62%),
+    radial-gradient(60% 40% at 12% 40%, rgba(255, 255, 255, .07) 0%, transparent 66%),
+    linear-gradient(158deg, var(--art-a) 0%, var(--art-base) 52%, var(--art-b) 100%);
+}
+.attract__bg img { width: 100%; height: 100%; object-fit: cover; }
+.attract__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+
+/* 아래로 갈수록 잉크가 차올라 글자 대비를 확보한다 */
+.attract__veil {
   position: absolute;
   inset: 0;
   z-index: 1;
   background: linear-gradient(180deg,
-    rgba(12, 15, 18, .62) 0%,
-    rgba(12, 15, 18, .30) 34%,
-    rgba(12, 15, 18, .74) 76%,
-    rgba(10, 12, 15, .94) 100%);
+    rgba(15, 19, 23, .62) 0%,
+    rgba(15, 19, 23, .34) 20%,
+    rgba(15, 19, 23, .58) 44%,
+    rgba(14, 17, 20, .93) 62%,
+    rgba(13, 16, 19, .985) 78%);
 }
 
-.idle__inner {
+/* -- 내용 ------------------------------------------------------ */
+.attract__inner {
   position: relative;
   z-index: 2;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  padding: var(--s-12) var(--s-10) var(--s-10);
-  color: #F4F7F9;
-}
-.idle__mid {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: var(--s-6);
-  padding: var(--s-10) 0;
+  justify-content: space-between;
+  padding: var(--s-10) var(--s-9) var(--s-9);
+  color: #F2F5F7;
 }
 
-.idle__brand {
-  display: flex;
+.attract__brand {
+  display: inline-flex;
   align-items: center;
   gap: var(--s-4);
   align-self: flex-start;
   padding: var(--s-3) var(--s-6) var(--s-3) var(--s-3);
-  border-radius: var(--r-pill);
-  background: rgba(255, 255, 255, .1);
-  border: 1px solid rgba(255, 255, 255, .18);
-  transition: background-color var(--d-2) var(--ease-out), transform var(--d-1) var(--ease-out);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, .10);
+  border: 1px solid rgba(255, 255, 255, .17);
+  transition: background-color var(--d-2) var(--ease-out),
+              transform var(--d-1) var(--ease-out);
 }
-.idle__brand:active { transform: scale(.97); background: rgba(255, 255, 255, .18); }
-.idle__logo {
+.attract__brand:active { transform: scale(.97); background: rgba(255, 255, 255, .18); }
+.attract__mark {
   display: grid;
   place-items: center;
-  width: 92px; height: 92px;
+  width: 88px; height: 88px;
   flex: 0 0 auto;
-  border-radius: 50%;
+  border-radius: var(--r-sm);
   overflow: hidden;
-  background: #fff;
-  color: var(--accent-deep);
-  font-size: 44px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 40px;
   font-weight: 800;
   letter-spacing: -0.04em;
 }
-.idle__logo img { width: 100%; height: 100%; object-fit: cover; }
-.idle__name { font-size: var(--t-lg); font-weight: 700; letter-spacing: -0.02em; }
-.idle__tag {
+.attract__mark img { width: 100%; height: 100%; object-fit: cover; }
+.attract__name { font-size: var(--t-lg); font-weight: 700; letter-spacing: -0.025em; }
+.attract__tag {
   display: block;
   margin-top: 3px;
   font-size: var(--t-2xs);
   font-weight: 600;
   letter-spacing: .2em;
   text-transform: uppercase;
-  opacity: .62;
+  color: rgba(242, 245, 247, .62);
 }
 
-.idle__foot { flex: 0 0 auto; display: flex; flex-direction: column; gap: var(--s-6); }
-.idle__kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-3);
-  align-self: flex-start;
-  padding: 10px 20px;
-  border-radius: var(--r-sm);
-  background: var(--accent);
-  color: var(--on-accent);
-  font-size: var(--t-2xs);
+/* 오른쪽을 일부러 비워 비대칭을 만든다 */
+.attract__say { display: flex; flex-direction: column; gap: var(--s-5); }
+.attract__title {
+  max-width: 84%;
+  font-size: calc(96px * var(--ts));
   font-weight: 800;
-  letter-spacing: .18em;
-  text-transform: uppercase;
+  line-height: 1.08;
+  letter-spacing: -0.048em;
+  word-break: keep-all;
 }
-.idle__title {
-  font-size: var(--t-5xl);
-  font-weight: 800;
-  line-height: 1.06;
-  letter-spacing: -0.045em;
-}
-.idle__lede {
-  max-width: 760px;
+.attract__lede {
+  max-width: 88%;
   font-size: var(--t-md);
   line-height: 1.55;
-  color: rgba(244, 247, 249, .74);
+  color: rgba(242, 245, 247, .76);
+  word-break: keep-all;
 }
-.idle__cta { display: flex; gap: var(--s-4); align-items: stretch; }
-.idle__cta .btn--hero { flex: 1 1 auto; justify-content: space-between; padding: 0 var(--s-8); }
-.idle__big {
+
+.attract__act { display: flex; gap: var(--s-4); align-items: stretch; }
+.attract__go {
+  flex: 1 1 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: var(--touch-hero);
+  padding: 0 var(--s-8);
+  border-radius: var(--r-md);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: var(--t-2xl);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  transition: background-color var(--d-2) var(--ease-out),
+              transform var(--d-1) var(--ease-out);
+}
+.attract__go:active { background: var(--accent-deep); transform: scale(.985); }
+.attract--lightcta .attract__go { background: #F2F5F7; color: var(--ink); }
+.attract--lightcta .attract__go:active { background: #D9E0E5; }
+.attract__go svg { width: 52px; height: 52px; flex: 0 0 auto; }
+
+.attract__big {
   flex: 0 0 auto;
   width: var(--touch-hero);
-  border-radius: var(--r-xl);
-  background: rgba(255, 255, 255, .12);
-  border: 1px solid rgba(255, 255, 255, .22);
-  color: #F4F7F9;
   display: grid;
   place-items: center;
-  gap: 4px;
-  transition: background-color var(--d-2) var(--ease-out);
+  gap: 6px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .22);
+  color: #F2F5F7;
+  transition: background-color var(--d-2) var(--ease-out),
+              transform var(--d-1) var(--ease-out);
 }
-.idle__big:active { background: rgba(255, 255, 255, .22); }
-.idle__big.is-on { background: #fff; border-color: #fff; color: var(--ink); }
-.idle__big svg { width: 46px; height: 46px; }
-.idle__big span { font-size: var(--t-2xs); font-weight: 700; }
+.attract__big:active { transform: scale(.96); }
+.attract__big.is-on { background: #FFFFFF; border-color: #FFFFFF; color: var(--ink); }
+.attract__big svg { width: 48px; height: 48px; }
+.attract__big span { font-size: var(--t-2xs); font-weight: 700; }
+
+/* -- 등장 순서: 브랜드 → 문구 → 행동 -------------------------- */
+.attract.is-active .attract__brand { animation: rise var(--d-4) var(--ease-out) both; }
+.attract.is-active .attract__title { animation: rise var(--d-4) var(--ease-out) .08s both; }
+.attract.is-active .attract__lede  { animation: rise var(--d-4) var(--ease-out) .14s both; }
+.attract.is-active .attract__act   { animation: rise var(--d-4) var(--ease-out) .20s both; }
+@keyframes rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .attract__col { animation: none; }
+}
 
 /* ============================================================
    2. 주문 유형

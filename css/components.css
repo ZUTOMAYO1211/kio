@@ -386,6 +386,7 @@
 .dialog__actions .btn { flex: 1 1 0; }
 
 /* 결제 직전 주문 방식 재확인 — 다이얼로그 안에서만 쓴다 */
+.dialog--otpick .dialog__actions .btn { border-radius: var(--r-btn); }
 .otpick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); margin-top: var(--s-7); }
 .otpick__c {
   display: flex;

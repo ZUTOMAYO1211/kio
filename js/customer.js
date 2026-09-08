@@ -352,6 +352,9 @@
         { label: '이대로 결제', kind: 'primary', value: 'go' }
       ],
       onMount: function (d) {
+        /* 이 창의 버튼만 선택 카드와 모서리를 맞춘다.
+           .btn--primary 는 시스템 전체가 알약이라 여기서만 덮는다 */
+        d.root.classList.add('dialog--otpick');
         $$('[data-otpick]', d.core).forEach(function (b) {
           b.addEventListener('click', function () {
             picked = b.getAttribute('data-otpick');

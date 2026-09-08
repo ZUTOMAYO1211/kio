@@ -98,7 +98,10 @@
        secondary / utility  -> --r-btn  (16)
        inputs               -> --r-input (14)
        chips and badges     -> --r-chip (10)
-     Nothing else invents its own radius.                     */
+     Nothing else invents its own radius.
+     Two primary actions opt out to --r-btn on request:
+     the home CTA (.home__go) and the order-type confirm
+     dialog (.dialog--otpick).                                */
   --r-chip:  10px;
   --r-input: 14px;
   --r-btn:   16px;

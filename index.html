@@ -152,7 +152,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 18l-6-6 6-6"/></svg>
               </button>
               <span class="bar__title">주문 내역</span>
-              <span class="shop__count num" id="cartCount"></span>
+              <span class="bar__count num" id="cartCount"></span>
               <button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
               </button>
@@ -181,7 +181,6 @@
                ============================================ -->
           <section class="screen pin" data-screen="pin" aria-label="관리자 인증">
             <div class="pin__inner" id="pinInner">
-              <span class="label">Admin</span>
               <h2 class="pin__title">관리자 인증</h2>
               <p class="pin__desc">편집 모드로 들어가려면 PIN 4자리를 입력하세요.<br><span class="muted-2">초기 PIN은 0000 입니다.</span></p>
               <div class="pin__dots" id="pinDots" role="status" aria-label="입력한 자릿수">
@@ -222,10 +221,11 @@
               <button class="admin__exit" data-act="admin-exit" type="button">나가기</button>
             </header>
 
-            <div class="admin__body">
-              <nav class="admin__rail" id="adminNav" aria-label="편집 섹션"></nav>
-              <div class="scroller admin__panel" id="adminPanel"></div>
-            </div>
+            <nav class="admin__nav" aria-label="편집 섹션">
+              <div class="admin__navlist" id="adminNav"></div>
+            </nav>
+
+            <div class="scroller admin__panel" id="adminPanel"></div>
           </section>
 
         </main>

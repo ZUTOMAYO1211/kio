@@ -449,6 +449,8 @@
   letter-spacing: -0.025em;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.bar__count { flex: 0 0 auto; font-size: var(--t-sm); font-weight: 700; color: var(--ink-3); }
+
 .item__scroll { padding-bottom: var(--s-9); }
 
 .item__hero { display: flex; gap: var(--s-7); padding: var(--s-8) var(--gutter) var(--s-7); }

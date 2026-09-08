@@ -109,7 +109,7 @@
         lede:      String(store.lede || ''),
         logo:      String(store.logo || ''),
         heroImage: String(store.heroImage || ''),
-        theme:     String(store.theme || 'sienna'),
+        theme:     String(store.theme || 'red'),
         currency:  CURRENCY[store.currency] ? store.currency : 'KRW'
       },
       settings: {

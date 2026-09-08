@@ -1,9 +1,14 @@
 /* ============================================================
    KIO — Design Tokens
-   Direction: transit signage. A public terminal you read
-   standing up, in a hurry, without asking anyone for help.
-   Cool concourse grey ground, white plates, visible rules,
-   one signal accent, and numerals that read from a distance.
+
+   Direction: light Korean retail kiosk. Reference set is
+   McDonald's attract, Mammoth Coffee, Baskin Robbins: white
+   ground, near-borderless tinted cards, top text tabs, paged
+   grids, one wide accent action at the bottom.
+
+   Dials: VARIANCE 3 / MOTION 3 / DENSITY 5.
+   Public terminal for all ages, so predictability beats
+   asymmetry and motion stays out of the way.
 
    All values are authored in the 1080 x 1920 kiosk reference
    space. The stage is uniformly transform-scaled to the device,
@@ -11,145 +16,130 @@
    ============================================================ */
 
 :root {
-  /* ---- Reference canvas ---------------------------------- */
   --kiosk-w: 1080;
   --kiosk-h: 1920;
 
-  /* ---- Ground / plate / ink ------------------------------ */
-  --ground:    #EDEFF2;   /* concourse grey, the app floor   */
-  --ground-2:  #E4E8EC;   /* recessed grey                   */
-  --panel:     #FFFFFF;   /* plates: cards, bars, sheets     */
-  --panel-2:   #F6F8FA;   /* quiet fill inside a plate       */
-  --panel-3:   #EBEEF1;   /* pressed / track                 */
+  /* ---- Ground / card / ink ------------------------------- */
+  /* No pure #FFF or #000 anywhere. */
+  --ground:      #FDFDFE;   /* the page                      */
+  --ground-2:    #F7F9FB;   /* recessed band (tabs, footers) */
+  --card:        #F3F5F8;   /* product tile fill             */
+  --card-press:  #E8ECF1;   /* pressed                       */
+  --field:       #FFFFFE;   /* inputs, raised sheets         */
 
-  --ink:       #14181C;   /* primary text, dark bar          */
-  --ink-2:     #4E5862;   /* secondary                       */
-  --ink-3:     #7D8892;   /* meta                            */
-  --ink-4:     #AAB3BC;   /* disabled                        */
-  --on-ink:    #F2F5F7;   /* text on the dark bar            */
+  --ink:         #16181B;
+  --ink-2:       #565E68;
+  --ink-3:       #838C96;
+  --ink-4:       #AEB6BF;
+  --on-ink:      #F6F8FA;
 
-  /* Rules are visible on purpose. A kiosk needs its edges to
-     read as edges from a metre away, not as soft shadows.    */
-  --line:      #DBE0E5;
-  --line-2:    #C4CCD4;
-  --line-3:    #9AA5AF;
+  /* Hairlines are structural only. Tiles carry no border. */
+  --line:        #E8ECF0;
+  --line-2:      #D5DBE2;
 
-  /* ---- Signal accent (overridden per store theme) -------- */
+  /* ---- Accent (store-configurable, preserved from brand) -- */
   --accent:      #E23A2B;
   --accent-deep: #B62A1D;
-  --accent-tint: rgba(226, 58, 43, .10);
-  --accent-tint-2: rgba(226, 58, 43, .20);
+  --accent-tint: rgba(226, 58, 43, .09);
+  --accent-tint-2: rgba(226, 58, 43, .18);
   --on-accent:   #FFFFFF;
 
   /* ---- Semantic ------------------------------------------ */
   --ok:        #17795A;
-  --ok-tint:   rgba(23, 121, 90, .12);
-  --warn:      #9A6410;
-  --warn-tint: rgba(154, 100, 16, .14);
+  --ok-tint:   rgba(23, 121, 90, .11);
+  --warn:      #96620F;
+  --warn-tint: rgba(150, 98, 15, .13);
   --danger:      #C22B22;
-  --danger-tint: rgba(194, 43, 34, .10);
+  --danger-tint: rgba(194, 43, 34, .09);
 
-  /* ---- Type families ------------------------------------- */
-  /* Pretendard carries Korean UI text properly; Archivo is
-     reserved for figures, where expanded width reads like a
-     departure board.                                          */
-  --font-ui:  "Pretendard Variable", Pretendard, -apple-system,
-              BlinkMacSystemFont, system-ui, sans-serif;
-  --font-num: "Archivo", "Pretendard Variable", Pretendard,
-              system-ui, sans-serif;
+  /* ---- Type ---------------------------------------------- */
+  /* One family. The references set prices in the same face as
+     everything else, so a second display face would be noise. */
+  --font-ui: "Pretendard Variable", Pretendard, -apple-system,
+             BlinkMacSystemFont, system-ui, sans-serif;
 
-  /* ---- Type scale (kiosk px) ----------------------------- */
-  /* --ts is raised by .is-large (큰 글씨 모드) */
-  --ts: 1;
+  --ts: 1;                       /* raised by .is-large */
   --t-2xs:  calc(20px * var(--ts));
   --t-xs:   calc(24px * var(--ts));
   --t-sm:   calc(27px * var(--ts));
   --t-base: calc(30px * var(--ts));
-  --t-md:   calc(33px * var(--ts));
-  --t-lg:   calc(37px * var(--ts));
-  --t-xl:   calc(43px * var(--ts));
-  --t-2xl:  calc(52px * var(--ts));
-  --t-3xl:  calc(64px * var(--ts));
-  --t-4xl:  calc(80px * var(--ts));
-  --t-5xl:  calc(104px * var(--ts));
-  --t-6xl:  calc(140px * var(--ts));
+  --t-md:   calc(34px * var(--ts));
+  --t-lg:   calc(38px * var(--ts));
+  --t-xl:   calc(44px * var(--ts));
+  --t-2xl:  calc(54px * var(--ts));
+  --t-3xl:  calc(68px * var(--ts));
+  --t-4xl:  calc(86px * var(--ts));
+  --t-5xl:  calc(110px * var(--ts));
 
-  /* ---- Spacing (4px base, kiosk-dense) ------------------- */
-  --s-1:   4px;
-  --s-2:   8px;
-  --s-3:  12px;
-  --s-4:  16px;
-  --s-5:  20px;
-  --s-6:  24px;
-  --s-7:  32px;
-  --s-8:  40px;
-  --s-9:  48px;
-  --s-10: 56px;
-  --s-12: 72px;
-  --s-14: 88px;
-  --s-16: 96px;
-  --s-20: 128px;
+  /* ---- Spacing ------------------------------------------- */
+  --s-1:   4px;  --s-2:   8px;  --s-3:  12px;  --s-4:  16px;
+  --s-5:  20px;  --s-6:  24px;  --s-7:  32px;  --s-8:  40px;
+  --s-9:  48px;  --s-10: 56px;  --s-12: 72px;  --s-14: 88px;
+  --s-16: 96px;  --s-20: 128px;
 
-  --gutter: 32px;          /* content side padding           */
+  --gutter: 40px;
 
-  /* ---- Chrome geometry ----------------------------------- */
-  --rail-w:   216px;       /* left category rail             */
-  --header-h: 132px;
+  /* ---- Chrome -------------------------------------------- */
+  --header-h: 128px;
+  --tabs-h:   124px;
   --paybar-h: 176px;
 
   /* ---- Touch floor --------------------------------------- */
-  /* 168 kiosk px ≈ 61 CSS px on a 390pt phone → clears the
-     60px minimum from the spec on the main test device.      */
+  /* 168 kiosk px is about 61 CSS px on a 390pt phone, which
+     clears the 60px minimum on the main test device. */
   --touch:      168px;
   --touch-lg:   200px;
-  --touch-hero: 232px;
+  --touch-hero: 236px;
 
-  /* ---- Radii — modest. Terminals are made of panels, not
-     pillows. Only pills and the accent CTA go fully round. -- */
-  --r-xs:   6px;
-  --r-sm:  10px;
-  --r-md:  14px;
-  --r-lg:  18px;
-  --r-xl:  24px;
-  --r-2xl: 32px;
-  --r-pill: 999px;
+  /* ---- SHAPE LOCK ----------------------------------------
+     One documented rule, followed everywhere:
+       tiles and cards      -> --r-card (20)
+       primary actions      -> --r-pill
+       secondary / utility  -> --r-btn  (16)
+       inputs               -> --r-input (14)
+       chips and badges     -> --r-chip (10)
+     Nothing else invents its own radius.                     */
+  --r-chip:  10px;
+  --r-input: 14px;
+  --r-btn:   16px;
+  --r-card:  20px;
+  --r-sheet: 28px;
+  --r-pill:  999px;
 
-  /* ---- Elevation — used sparingly; rules do most of the
-     structural work, shadows only lift floating chrome. ----- */
-  --lift-1: 0 1px 2px rgba(20, 24, 28, .05);
-  --lift-2: 0 2px 8px rgba(20, 24, 28, .08);
-  --lift-3: 0 12px 32px -12px rgba(20, 24, 28, .28);
-  --lift-4: 0 -8px 40px -16px rgba(20, 24, 28, .22);
+  /* ---- Elevation ----------------------------------------- */
+  /* Tinted to the ground hue, never pure black. */
+  --lift-1: 0 1px 2px rgba(22, 24, 27, .04);
+  --lift-2: 0 2px 10px rgba(22, 24, 27, .07);
+  --lift-3: 0 12px 34px -12px rgba(22, 24, 27, .22);
+  --lift-4: 0 -6px 32px -14px rgba(22, 24, 27, .16);
 
-  /* ---- Motion -------------------------------------------- */
-  --ease-out:  cubic-bezier(.2, .8, .3, 1);
-  --ease-flap: cubic-bezier(.28, .9, .25, 1);
-  --ease-in:   cubic-bezier(.5, 0, .85, .5);
+  /* ---- Motion (dial 3: press feedback and state only) ----- */
+  --ease-out: cubic-bezier(.2, .8, .3, 1);
+  --ease-in:  cubic-bezier(.5, 0, .85, .5);
+  --d-1: 110ms;
+  --d-2: 180ms;
+  --d-3: 260ms;
+  --d-4: 380ms;
 
-  --d-1: 120ms;
-  --d-2: 200ms;
-  --d-3: 300ms;
-  --d-4: 460ms;
-
-  /* ---- Systemic z-layers --------------------------------- */
-  --z-rail:   5;
+  /* ---- z layers ------------------------------------------ */
   --z-sticky: 10;
   --z-sheet:  20;
   --z-modal:  30;
   --z-toast:  40;
 
-  /* Placeholder art texture — keeps generated thumbnails from
-     reading as flat CSS. Not used as a page-wide overlay. */
+  /* Texture for generated tile art, so placeholders do not
+     read as flat CSS. Not a page-wide overlay. */
   --grain-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
 
-/* 큰 글씨 모드 — type up, touch targets up, rail wider */
+/* 큰 글씨 모드 */
 .is-large {
   --ts: 1.16;
   --touch:      196px;
   --touch-lg:   228px;
-  --touch-hero: 256px;
-  --rail-w:     236px;
-  --header-h:   148px;
+  --touch-hero: 260px;
+  --header-h:   144px;
+  --tabs-h:     138px;
   --paybar-h:   196px;
+  --gutter:     32px;
 }

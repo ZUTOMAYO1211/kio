@@ -5,14 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <title>KIO 키오스크 시뮬레이터</title>
 <meta name="description" content="실제 매장 키오스크의 UX를 웹으로 재현하고 개선한 시뮬레이터. 프리셋 · 자유 편집 · 모의 결제.">
-<meta name="theme-color" content="#14181C">
+<meta name="theme-color" content="#FDFDFE">
 <meta name="color-scheme" content="light">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
 
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/base.css">
@@ -30,36 +27,35 @@
         <main class="screens" id="screens">
 
           <!-- ============================================
-               1. 대기 화면 (Attract)
+               1. 홈
+               큰 사진 한 장을 중간 위에, 그 아래 시작하기와
+               큰 글씨 모드.
                ============================================ -->
-          <section class="screen attract" data-screen="idle" aria-label="대기 화면">
-            <div class="attract__bg" id="attractBg" aria-hidden="true"></div>
-            <div class="attract__veil" aria-hidden="true"></div>
+          <section class="screen home" data-screen="idle" aria-label="홈">
+            <button class="home__brand" id="brandTap" type="button" aria-label="매장 로고">
+              <span class="home__mark" id="homeMark">K</span>
+              <span>
+                <span class="home__name" id="homeName">KIO 스토어</span>
+                <span class="home__tag" id="homeTag">Self Order</span>
+              </span>
+            </button>
 
-            <div class="attract__inner">
-              <button class="attract__brand" id="brandTap" type="button" aria-label="매장 로고">
-                <span class="attract__mark" id="attractMark">K</span>
-                <span>
-                  <span class="attract__name" id="attractName">KIO 스토어</span>
-                  <span class="attract__tag" id="attractTag">Self Order</span>
-                </span>
+            <div class="home__shot" id="homeShot" aria-hidden="true"></div>
+
+            <div class="home__say">
+              <h1 class="home__title" id="homeTitle">주문을 시작해 볼까요?</h1>
+              <p class="home__lede" id="homeLede"></p>
+            </div>
+
+            <div class="home__act">
+              <button class="home__go" id="startBtn" type="button">
+                주문 시작하기
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
               </button>
-
-              <div class="attract__say">
-                <h1 class="attract__title" id="attractTitle">주문을 시작해 볼까요?</h1>
-                <p class="attract__lede" id="attractLede"></p>
-
-                <div class="attract__act">
-                  <button class="attract__go" id="startBtn" type="button">
-                    주문 시작하기
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-                  </button>
-                  <button class="attract__big" id="attractBig" type="button" aria-pressed="false" aria-label="큰 글씨 모드">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
-                    <span>큰 글씨</span>
-                  </button>
-                </div>
-              </div>
+              <button class="home__big" id="homeBig" type="button" aria-pressed="false">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
+                큰 글씨 모드
+              </button>
             </div>
           </section>
 
@@ -67,11 +63,11 @@
                2. 주문 유형
                ============================================ -->
           <section class="screen otype" data-screen="ordertype" aria-label="주문 유형 선택">
-            <header class="item__bar">
+            <header class="bar">
               <button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 18l-6-6 6-6"/></svg>
               </button>
-              <span class="item__bartitle" id="otypeStore">KIO 스토어</span>
+              <span class="bar__title" id="otypeStore">KIO 스토어</span>
               <button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
               </button>
@@ -109,29 +105,32 @@
           </section>
 
           <!-- ============================================
-               3. 메뉴 (rail + grid + paybar)
+               3. 메뉴 (상단 탭 + 페이지 그리드 + 결제 바)
                ============================================ -->
           <section class="screen shop" data-screen="menu" aria-label="메뉴">
             <header class="shop__head">
-              <div class="shop__brand">
+              <div class="shop__id">
                 <span class="shop__mark" id="shopMark">K</span>
                 <span class="shop__store" id="shopStore">KIO 스토어</span>
-              </div>
-              <div class="shop__title">
-                <h2 class="shop__h" id="shopH">추천메뉴</h2>
-                <span class="shop__count num" id="shopCount"></span>
                 <span class="shop__mode" id="shopMode">매장 식사</span>
               </div>
               <div class="shop__tools">
                 <button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>
                 </button>
+                <button class="icon-btn icon-btn--sm" data-act="go-idle" type="button" aria-label="처음으로">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-6h4v6h3.5a1 1 0 0 0 1-1V9.5"/></svg>
+                </button>
               </div>
             </header>
 
+            <nav class="tabs" id="tabs" aria-label="카테고리">
+              <div class="tabs__list" id="tabsList"></div>
+            </nav>
+
             <div class="shop__body">
-              <nav class="rail" id="rail" aria-label="카테고리"></nav>
-              <div class="scroller shop__main" id="shopMain"></div>
+              <div class="grid" id="grid"></div>
+              <div class="pager" id="pager"></div>
             </div>
 
             <footer class="paybar" id="payBar"></footer>
@@ -148,11 +147,11 @@
                5. 장바구니
                ============================================ -->
           <section class="screen cart" data-screen="cart" aria-label="주문 내역">
-            <header class="item__bar">
+            <header class="bar">
               <button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H6M11 18l-6-6 6-6"/></svg>
               </button>
-              <span class="item__bartitle">주문 내역</span>
+              <span class="bar__title">주문 내역</span>
               <span class="shop__count num" id="cartCount"></span>
               <button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 15.5 5.6 8l3.1 7.5m-5.3-2.4h4.4"/><path d="M12.5 18.5 17 7l4.5 11.5m-7.6-3.6h6.2"/></svg>

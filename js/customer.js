@@ -24,13 +24,23 @@
   }
 
   /* =========================================================
-     메뉴 — 좌측 카테고리 레일 + 균일 그리드
+     메뉴 - 상단 카테고리 탭 + 페이지 그리드
+     레퍼런스(매머드, 배스킨라빈스)는 스크롤이 아니라 페이지를
+     넘긴다. 세로 대형 터치스크린에서는 그쪽이 손이 덜 간다.
      ========================================================= */
+  var PER_PAGE = 12;         /* 4열 x 3행 */
+  var PER_PAGE_LARGE = 9;    /* 큰 글씨 모드는 3열 x 3행 */
+  var page = 0;
+
+  function perPage() {
+    return Store.prefs.largeText ? PER_PAGE_LARGE : PER_PAGE;
+  }
+
   function renderMenu() {
     var cfg = Store.config;
     var cats = Store.visibleCategories();
-
     var s = cfg.store;
+
     $('#shopMark').innerHTML = s.logo
       ? '<img src="' + esc(s.logo) + '" alt="">'
       : esc(Store.glyphFor(s.name));
@@ -38,105 +48,111 @@
     $('#shopMode').textContent = Store.session.orderType === 'takeout' ? '포장' : '매장 식사';
 
     if (!cats.length) {
-      $('#rail').innerHTML = '';
-      $('#shopH').textContent = '메뉴';
-      $('#shopCount').textContent = '';
-      $('#shopMain').innerHTML = '<div class="shop__empty">' +
-        empty('empty', '보여 드릴 카테고리가 없습니다',
-              '편집 모드 › 카테고리에서 추가하거나 표시를 켜 주세요.') + '</div>';
+      $('#tabsList').innerHTML = '';
+      $('#grid').innerHTML = empty('empty', '보여 드릴 카테고리가 없습니다',
+        '편집 모드 > 카테고리에서 추가하거나 표시를 켜 주세요.');
+      $('#pager').innerHTML = '';
       renderPayBar();
       return;
     }
 
     if (!activeCatId || !cats.some(function (c) { return c.id === activeCatId; })) {
       activeCatId = cats[0].id;
+      page = 0;
     }
 
-    /* -- 레일 ------------------------------------------------ */
-    $('#rail').innerHTML = cats.map(function (c) {
-      var n = Store.menusOf(c.id).length;
-      return '<button class="rail__item' + (c.id === activeCatId ? ' is-on' : '') + '" ' +
+    $('#tabsList').innerHTML = cats.map(function (c) {
+      return '<button class="tab' + (c.id === activeCatId ? ' is-on' : '') + '" ' +
         'data-cat="' + esc(c.id) + '" type="button" ' +
         'aria-current="' + (c.id === activeCatId ? 'true' : 'false') + '">' +
-        '<span class="rail__ic">' + icon(UI.catIcon(c.name)) + '</span>' +
-        '<span class="rail__nm">' + esc(c.name) + '</span>' +
-        '<span class="rail__n num">' + n + '</span>' +
-        '</button>';
+        esc(c.name) +
+        '<span class="tab__n num">' + Store.menusOf(c.id).length + '</span></button>';
     }).join('');
 
-    var on = $('#rail .rail__item.is-on');
-    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest' });
+    var on = $('#tabsList .tab.is-on');
+    if (on && on.scrollIntoView) on.scrollIntoView({ block: 'nearest', inline: 'center' });
 
-    /* -- 그리드 ---------------------------------------------- */
-    var cat = Store.getCategory(activeCatId);
-    var list = Store.menusOf(activeCatId);
-    var outCount = list.filter(function (m) { return m.soldOut; }).length;
-
-    $('#shopH').textContent = cat ? cat.name : '';
-    $('#shopCount').textContent = list.length
-      ? list.length + '개' + (outCount ? ' · 품절 ' + outCount : '')
-      : '';
-
-    $('#shopMain').innerHTML = list.length
-      ? '<div class="shop__grid">' + list.map(card).join('') + '</div>'
-      : '<div class="shop__empty">' +
-        empty('empty', '이 카테고리에 메뉴가 없습니다',
-              '편집 모드 › 메뉴에서 추가할 수 있습니다.') + '</div>';
-    $('#shopMain').scrollTop = 0;
-
+    renderPage();
     renderPayBar();
   }
 
-  function card(m, i) {
-    /* 차별점 ① — 품절이어도 자리를 지킨다 */
-    var out = m.soldOut
-      ? '<span class="pcard__out"><span class="badge badge--soldout">품절</span></span>' : '';
+  function renderPage() {
+    var list = Store.menusOf(activeCatId);
+    var n = perPage();
+    var pages = Math.max(1, Math.ceil(list.length / n));
+    if (page >= pages) page = pages - 1;
+    if (page < 0) page = 0;
 
-    return '<button class="pcard' + (m.soldOut ? ' is-out' : '') + '" ' +
-      'data-menu="' + esc(m.id) + '" style="--i:' + Math.min(i, 14) + '" type="button"' +
+    if (!list.length) {
+      $('#grid').innerHTML = empty('empty', '이 카테고리에 메뉴가 없습니다',
+        '편집 모드 > 메뉴에서 추가할 수 있습니다.');
+      $('#pager').innerHTML = '';
+      return;
+    }
+
+    $('#grid').innerHTML = list.slice(page * n, page * n + n).map(tile).join('');
+
+    var dots = '';
+    for (var i = 0; i < pages; i++) {
+      dots += '<span class="pager__dot' + (i === page ? ' is-on' : '') + '"></span>';
+    }
+    $('#pager').className = 'pager' + (pages < 2 ? ' is-single' : '');
+    $('#pager').innerHTML =
+      '<button class="pager__btn" data-page="-1" type="button" aria-label="이전 페이지"' +
+      (page === 0 ? ' disabled' : '') + '>' + icon('arrowL') + '</button>' +
+      '<span class="pager__dots" role="status" aria-label="' + (page + 1) + ' / ' + pages + '">' + dots + '</span>' +
+      '<button class="pager__btn" data-page="1" type="button" aria-label="다음 페이지"' +
+      (page >= pages - 1 ? ' disabled' : '') + '>' + icon('arrowR') + '</button>';
+  }
+
+  function tile(m) {
+    /* 차별점 (1) 품절이어도 자리를 지킨다 */
+    var out = m.soldOut
+      ? '<span class="tile__out"><span class="badge badge--soldout">품절</span></span>' : '';
+
+    return '<button class="tile' + (m.soldOut ? ' is-out' : '') + '" ' +
+      'data-menu="' + esc(m.id) + '" type="button"' +
       (m.soldOut ? ' aria-disabled="true"' : '') + '>' +
+      '<span class="tile__shot">' +
       (m.feature && !m.soldOut
-        ? '<span class="pcard__flag"><span class="badge badge--accent">대표</span></span>' : '') +
-      thumb(m.name, m.image, { className: 'pcard__thumb', glyph: 104, overlay: out }) +
-      '<span class="pcard__body">' +
-      '<span class="pcard__nm">' + esc(m.name) + '</span>' +
-      '<span class="pcard__meta">' +
-      '<span class="pcard__price num">' + esc(Store.money(m.price)) + '</span>' +
-      (m.kcal ? '<span class="pcard__kcal num">' + m.kcal + ' Kcal</span>' : '') +
-      '</span></span></button>';
+        ? '<span class="tile__flag"><span class="badge badge--accent">대표</span></span>' : '') +
+      thumb(m.name, m.image, { glyph: 84, overlay: out }) +
+      '</span>' +
+      '<span class="tile__nm">' + esc(m.name) + '</span>' +
+      '<span class="tile__price num">' + esc(Store.money(m.price)) + '</span>' +
+      (m.kcal ? '<span class="tile__kcal num">' + m.kcal + ' Kcal</span>' : '') +
+      '</button>';
   }
 
   /* ---------------------------------------------------------
-     차별점 ④ — 장바구니 상시 노출
-     비어 있어도 사라지지 않는다. 합계는 자리수 롤로 갱신된다.
+     차별점 (4) 장바구니 상시 노출
+     비어 있어도 사라지지 않고, 무엇을 해야 하는지 말한다.
      --------------------------------------------------------- */
   function renderPayBar() {
     var bar = $('#payBar');
     if (!bar) return;
     var n = Store.cart.count();
-    var total = Store.cart.total();
 
     if (!bar.__built) {
       bar.innerHTML =
-        '<button class="paybar__home" data-act="go-idle" type="button">' +
-        icon('home') + '<span>처음으로</span></button>' +
-        '<div class="paybar__status">' +
-        '<span class="paybar__qty num" id="payQty">0</span>' +
+        '<button class="paybar__bag" data-act="go-cart" type="button" aria-label="주문 내역">' +
+        icon('bag') + '<span class="paybar__count num" id="payCount">0</span></button>' +
         '<span class="paybar__read">' +
-        '<span class="paybar__lab">담은 메뉴</span>' +
+        '<span class="paybar__lab" id="payLab">담은 메뉴</span>' +
         '<span class="paybar__sum num flap" id="paySum"></span>' +
-        '<span class="paybar__hint" id="payHintEmpty">메뉴를 골라 주세요</span>' +
-        '</span></div>' +
+        '<span class="paybar__hint" id="payHint">메뉴를 선택해 주세요</span>' +
+        '</span>' +
         '<button class="paybar__cta" data-act="go-cart" type="button">' +
-        '주문 확인' + icon('arrowR') + '</button>';
+        '결제하기' + icon('arrowR') + '</button>';
       bar.__built = true;
     }
 
     bar.classList.toggle('is-empty', n === 0);
-    $('#payQty').textContent = String(n);
+    $('#payCount').textContent = String(n);
+    $('#payLab').style.display = n === 0 ? 'none' : '';
     $('#paySum').style.display = n === 0 ? 'none' : '';
-    $('#payHintEmpty').style.display = n === 0 ? '' : 'none';
-    if (n > 0) UI.flap($('#paySum'), Store.money(total));
+    $('#payHint').style.display = n === 0 ? '' : 'none';
+    if (n > 0) UI.flap($('#paySum'), Store.money(Store.cart.total()));
   }
 
   /* =========================================================
@@ -187,10 +203,10 @@
     }).join('');
 
     $('#itemMount').innerHTML =
-      '<header class="item__bar">' +
+      '<header class="bar">' +
       '<button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">' +
       icon('arrowL') + '</button>' +
-      '<span class="item__bartitle">메뉴 선택</span>' +
+      '<span class="bar__title">메뉴 선택</span>' +
       '<button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">' +
       icon('text') + '</button>' +
       '</header>' +
@@ -332,10 +348,10 @@
     clearPayTimers();
 
     $('#payMount').innerHTML =
-      '<header class="item__bar">' +
+      '<header class="bar">' +
       '<button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">' +
       icon('arrowL') + '</button>' +
-      '<span class="item__bartitle">결제</span>' +
+      '<span class="bar__title">결제</span>' +
       '<button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">' +
       icon('text') + '</button>' +
       '</header>' +
@@ -472,13 +488,20 @@
     $('#screens').addEventListener('click', function (e) {
       var t;
 
-      if ((t = e.target.closest('.rail__item[data-cat]'))) {
+      if ((t = e.target.closest('.tab[data-cat]'))) {
         activeCatId = t.getAttribute('data-cat');
+        page = 0;
         renderMenu();
         return;
       }
 
-      if ((t = e.target.closest('.pcard[data-menu]'))) {
+      if ((t = e.target.closest('[data-page]'))) {
+        page += Number(t.getAttribute('data-page'));
+        renderPage();
+        return;
+      }
+
+      if ((t = e.target.closest('.tile[data-menu]'))) {
         var id = t.getAttribute('data-menu');
         var menu = Store.getMenu(id);
         if (!menu || menu.soldOut) return;
@@ -557,6 +580,7 @@
   global.KIO_CUSTOMER = {
     bind: bind,
     renderMenu: renderMenu,
+    renderPage: renderPage,
     renderPayBar: renderPayBar,
     renderCart: renderCart,
     renderPay: renderPay,
@@ -566,7 +590,7 @@
     clearDoneTimer: clearDoneTimer,
     hasDraft: function () { return !!draft; },
     dropDraft: function () { draft = null; },
-    resetCategory: function () { activeCatId = null; }
+    resetCategory: function () { activeCatId = null; page = 0; }
   };
 
 })(window);

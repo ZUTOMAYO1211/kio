@@ -100,34 +100,32 @@
   }
 
   /* =========================================================
-     3. 대기 화면 (Attract)
+     3. 홈
 
-     배경은 그 매장의 실제 메뉴로 만든다. 매장이 시작 화면
-     이미지를 지정했으면 그게 이긴다. 메뉴가 너무 적으면
-     테마 색으로 만든 필드로 물러난다.
+     요청 사양대로 큰 사진 한 장을 중간 위에 놓는다.
+     사진은 매장이 지정한 시작 화면 이미지가 1순위,
+     없으면 대표 메뉴 사진, 그것도 없으면 첫 메뉴,
+     메뉴가 아예 없으면 테마 색 면으로 물러난다.
      ========================================================= */
-  var WALL_COLS = 4;
-  var WALL_MIN = 4;          /* 이보다 적으면 벽이 반복만 하므로 폴백 */
-  var WALL_PER_COL = 6;
-
   function renderIdle() {
     var s = Store.config.store;
-    var bg = $('#attractBg');
 
-    bg.innerHTML = '';
+    /* 인라인 onerror 로 부모를 비우면 자기 자신이 분리되어 parentNode 가
+       null 이 된다. 핸들러를 JS 로 잡아 폴백을 보장한다. */
+    var shot = $('#homeShot');
+    shot.innerHTML = '';
     if (s.heroImage) {
-      /* 인라인 onerror 로 부모를 비우면 자기 자신이 분리되어 parentNode 가
-         null 이 된다. 핸들러를 JS 로 잡아 폴백을 보장한다. */
       var img = new Image();
       img.alt = '';
-      img.onerror = function () { bg.innerHTML = ''; paintBackdrop(bg); };
+      img.onerror = function () { shot.innerHTML = ''; paintShot(shot); };
       img.src = s.heroImage;
-      bg.appendChild(img);
+      shot.appendChild(img);
+      shot.className = 'home__shot';
     } else {
-      paintBackdrop(bg);
+      paintShot(shot);
     }
 
-    var mark = $('#attractMark');
+    var mark = $('#homeMark');
     var initial = Store.glyphFor(s.name);
     if (s.logo) {
       mark.innerHTML = '';
@@ -140,57 +138,42 @@
       mark.textContent = initial;
     }
 
-    /* 액센트가 너무 어두우면(차콜 테마 등) 잉크 배경 위에서 CTA 가
-       사라진다. 그럴 때만 밝은 버튼으로 바꾼다. 액센트는 로고 마크에
-       그대로 남아 브랜드가 유지된다. */
-    $('[data-screen="idle"]').classList.toggle('attract--lightcta', luminance(theme().accent) < 0.13);
+    /* 액센트가 밝아 흰 바닥과 대비가 3:1 아래면 잉크 버튼으로.
+       액센트는 로고 마크에 남아 브랜드는 유지된다. */
+    $('[data-screen="idle"]').classList.toggle('home--inkcta', luminance(theme().accent) > 0.42);
 
-    $('#attractName').textContent = s.name;
-    $('#attractTag').textContent = s.tagline;
-    $('#attractTitle').innerHTML = UI.nl2br(s.headline);
+    $('#homeName').textContent = s.name;
+    $('#homeTag').textContent = s.tagline;
+    $('#homeTitle').innerHTML = UI.nl2br(s.headline);
 
-    var lede = $('#attractLede');
+    var lede = $('#homeLede');
     lede.textContent = s.lede;
     lede.style.display = s.lede ? '' : 'none';
 
     $('#otypeStore').textContent = s.name;
   }
 
-  function paintBackdrop(bg) {
+  function paintShot(shot) {
     var menus = Store.config.menus;
-    if (menus.length >= WALL_MIN) bg.appendChild(menuWall(menus));
-    else bg.appendChild(themeField());
-  }
+    if (!menus.length) { shot.appendChild(themeField()); return; }
 
-  /* 메뉴 타일을 세 열로 흘린다. 각 열은 자기 자신을 한 번 더 이어 붙여
-     -50% 지점에서 이음매 없이 되감긴다. */
-  function menuWall(menus) {
-    var wall = document.createElement('div');
-    wall.className = 'attract__wall';
+    var pick = null;
+    menus.forEach(function (m) { if (!pick && m.feature && !m.soldOut) pick = m; });
+    if (!pick) menus.forEach(function (m) { if (!pick && !m.soldOut) pick = m; });
+    if (!pick) pick = menus[0];
 
-    var pool = menus.slice();
-    for (var c = 0; c < WALL_COLS; c++) {
-      var col = document.createElement('div');
-      col.className = 'attract__col';
-
-      var half = '';
-      for (var i = 0; i < WALL_PER_COL; i++) {
-        var m = pool[(c * WALL_PER_COL + i) % pool.length];
-        half += UI.thumb(m.name, m.image, { className: 'attract__tile', glyph: 38 });
-      }
-      col.innerHTML = half + half;   /* 이음매 없는 루프용 복제 */
-      wall.appendChild(col);
-    }
-    return wall;
+    shot.innerHTML = UI.thumb(pick.name, pick.image, { glyph: 190 });
   }
 
   function themeField() {
     var t = theme();
     var el = document.createElement('div');
-    el.className = 'attract__field';
-    el.style.setProperty('--art-a', mix(t.accent, '#FFFFFF', 0.42));
-    el.style.setProperty('--art-base', t.accent);
-    el.style.setProperty('--art-b', mix(t.deep, '#0B0E11', 0.34));
+    el.style.width = '100%';
+    el.style.height = '100%';
+    el.style.background =
+      'radial-gradient(70% 50% at 76% 14%, rgba(255,255,255,.20) 0%, transparent 64%),' +
+      'linear-gradient(152deg, ' + mix(t.accent, '#FFFFFF', 0.34) + ' 0%, ' +
+      t.accent + ' 56%, ' + mix(t.deep, '#101418', 0.22) + ' 100%)';
     return el;
   }
 
@@ -277,7 +260,7 @@
   function applyLargeText() {
     var on = !!Store.prefs.largeText;
     stage.classList.toggle('is-large', on);
-    $$('[data-act="toggle-big"], #attractBig').forEach(function (b) {
+    $$('[data-act="toggle-big"], #homeBig').forEach(function (b) {
       b.setAttribute('aria-pressed', String(on));
       b.classList.toggle('is-on', on);
     });
@@ -286,6 +269,8 @@
   function toggleLargeText() {
     Store.setPrefs({ largeText: !Store.prefs.largeText });
     applyLargeText();
+    /* 열 수가 바뀌므로 페이지 단위를 다시 계산한다 */
+    if (current === 'menu') CUST.renderMenu();
     UI.toast(Store.prefs.largeText ? '큰 글씨 모드를 켰습니다' : '큰 글씨 모드를 껐습니다');
   }
 
@@ -426,7 +411,7 @@
 
     $('#brandTap').addEventListener('click', onBrandTap);
     $('#startBtn').addEventListener('click', startOrder);
-    $('#attractBig').addEventListener('click', toggleLargeText);
+    $('#homeBig').addEventListener('click', toggleLargeText);
     $('#pinPad').addEventListener('click', function (e) {
       var t = e.target.closest('[data-key]');
       if (t) onPinKey(t.getAttribute('data-key'));

@@ -1,22 +1,19 @@
 /* ============================================================
-   KIO — Base: reset, kiosk stage, typography, screen transitions
+   KIO — Base: reset, kiosk stage, screen transitions
    ============================================================ */
 
 *, *::before, *::after { box-sizing: border-box; }
 
 html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
+  margin: 0; padding: 0; height: 100%;
   overflow: hidden;
   overscroll-behavior: none;
 }
-
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
   font-family: var(--font-ui);
-  background: #0C0E10;
+  background: #0E1113;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -30,72 +27,56 @@ img { display: block; max-width: 100%; }
 ul, ol { margin: 0; padding: 0; list-style: none; }
 h1, h2, h3, h4, p { margin: 0; }
 :focus { outline: none; }
-:focus-visible {
-  outline: 4px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: var(--r-xs);
-}
+:focus-visible { outline: 4px solid var(--accent); outline-offset: 2px; border-radius: var(--r-chip); }
 
 /* ------------------------------------------------------------
-   Desk — the room the terminal stands in. Neutral and dim so
-   the screen is the only lit surface.
+   Desk and cabinet. Only shown when there is room beside the
+   9:16 frame; a real phone gets the screen edge to edge.
    ------------------------------------------------------------ */
 .desk {
-  position: fixed;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: radial-gradient(120% 90% at 50% 0%, #23282D 0%, #14171A 52%, #0A0C0E 100%);
+  position: fixed; inset: 0;
+  display: grid; place-items: center;
+  background: radial-gradient(120% 90% at 50% 0%, #23272B 0%, #15181B 54%, #0B0D0F 100%);
 }
 .desk::after {
   content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 5%;
-  z-index: 0;
-  width: 70vmin;
-  height: 22vmin;
+  position: absolute; left: 50%; bottom: 5%; z-index: 0;
+  width: 68vmin; height: 20vmin;
   transform: translateX(-50%);
-  background: radial-gradient(50% 50% at 50% 50%, rgba(180, 200, 220, .12), transparent 70%);
+  background: radial-gradient(50% 50% at 50% 50%, rgba(190, 205, 220, .11), transparent 70%);
   filter: blur(30px);
   pointer-events: none;
 }
 
-/* ------------------------------------------------------------
-   Device — the cabinet. Collapses to nothing on a real phone.
-   ------------------------------------------------------------ */
 .device {
-  position: relative;
-  z-index: 1;
+  position: relative; z-index: 1;
   padding: var(--frame-pad, 0px);
   border-radius: var(--frame-r, 0px);
-  background: linear-gradient(165deg, #3A4148 0%, #22282D 45%, #171B1F 100%);
+  background: linear-gradient(165deg, #3B4147 0%, #23282D 45%, #171A1D 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, .14),
+    inset 0 1px 0 rgba(255, 255, 255, .13),
     inset 0 -1px 0 rgba(0, 0, 0, .5),
     0 40px 110px -40px rgba(0, 0, 0, .9);
   transition: padding var(--d-3) var(--ease-out);
 }
 .device::before {
   content: "";
-  position: absolute;
-  inset: calc(var(--frame-pad, 0px) - 2px);
+  position: absolute; inset: calc(var(--frame-pad, 0px) - 2px);
   border-radius: calc(var(--frame-r, 0px) - var(--frame-pad, 0px) + 2px);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .55), 0 0 0 2px rgba(255, 255, 255, .05);
-  pointer-events: none;
-  z-index: 2;
+  pointer-events: none; z-index: 2;
 }
 .device[data-framed="false"] { box-shadow: none; }
 .device[data-framed="false"]::before { display: none; }
 
 /* ------------------------------------------------------------
-   Stage — the 1080-wide kiosk canvas, uniformly scaled by JS.
+   Stage — the 1080-wide canvas, uniformly scaled by JS.
    ------------------------------------------------------------ */
 .stage-wrap {
   position: relative;
   /* The stage keeps its untransformed 1080-wide layout box, so a
-     plain `hidden` would leave a real scroll container here — any
-     focus() inside would drag the whole kiosk off screen.
+     plain `hidden` would leave a real scroll container here and
+     any focus() inside would drag the kiosk off screen.
      `clip` refuses to be a scroll container at all. */
   overflow: hidden;
   overflow: clip;
@@ -104,8 +85,7 @@ h1, h2, h3, h4, p { margin: 0; }
 }
 .stage {
   position: relative;
-  width: 1080px;
-  height: 1920px;
+  width: 1080px; height: 1920px;
   transform-origin: top left;
   background: var(--ground);
   color: var(--ink);
@@ -117,75 +97,40 @@ h1, h2, h3, h4, p { margin: 0; }
   isolation: isolate;
 }
 
-/* ------------------------------------------------------------
-   Type primitives
-   ------------------------------------------------------------ */
-/* Figures. Expanded Archivo so prices and counts read at a
-   distance, the way a board does. */
-.num {
-  font-family: var(--font-num);
-  font-variation-settings: "wdth" 112;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum" 1;
-  letter-spacing: -0.005em;
-}
-.num--tight { font-variation-settings: "wdth" 100; }
-
-.label {
-  font-size: var(--t-2xs);
-  font-weight: 700;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
+/* Figures share the UI face; only the numerals get locked to a
+   fixed advance so prices line up column to column. */
+.num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
 
 .muted   { color: var(--ink-3); }
 .muted-2 { color: var(--ink-4); }
 
 /* ------------------------------------------------------------
-   Screens
+   Screens. One visible at a time, cross-faded.
    ------------------------------------------------------------ */
 .screens { position: absolute; inset: 0; }
-
 .screen {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   display: none;
   flex-direction: column;
   background: var(--ground);
 }
-.screen.is-active {
-  display: flex;
-  animation: screen-in var(--d-3) var(--ease-out) both;
-}
+.screen.is-active { display: flex; animation: screen-in var(--d-3) var(--ease-out) both; }
 .screen.is-leaving {
-  display: flex;
-  z-index: 1;
+  display: flex; z-index: 1;
   animation: screen-out var(--d-2) var(--ease-in) both;
   pointer-events: none;
 }
-@keyframes screen-in {
-  from { opacity: 0; transform: translate3d(0, 12px, 0); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes screen-out {
-  from { opacity: 1; }
-  to   { opacity: 0; }
-}
+@keyframes screen-in  { from { opacity: 0; transform: translate3d(0, 10px, 0); } to { opacity: 1; transform: none; } }
+@keyframes screen-out { from { opacity: 1; } to { opacity: 0; } }
 .screen.is-active[data-dir="back"] { animation-name: screen-in-back; }
-@keyframes screen-in-back {
-  from { opacity: 0; transform: translate3d(0, -10px, 0); }
-  to   { opacity: 1; transform: none; }
-}
+@keyframes screen-in-back { from { opacity: 0; transform: translate3d(0, -8px, 0); } to { opacity: 1; transform: none; } }
 
 /* ------------------------------------------------------------
    Scroll regions
    ------------------------------------------------------------ */
 .scroller {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
+  flex: 1 1 auto; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   scrollbar-width: none;
@@ -193,33 +138,16 @@ h1, h2, h3, h4, p { margin: 0; }
 .scroller::-webkit-scrollbar { width: 0; height: 0; }
 
 /* ------------------------------------------------------------
-   Entrance — one short, uniform tick. Products should look
-   present, not perform.
-   ------------------------------------------------------------ */
-.reveal {
-  animation: reveal-in var(--d-3) var(--ease-out) both;
-  animation-delay: calc(var(--i, 0) * 22ms);
-}
-@keyframes reveal-in {
-  from { opacity: 0; transform: translate3d(0, 10px, 0); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ------------------------------------------------------------
    Orientation hint for phones held sideways
    ------------------------------------------------------------ */
 .rotate-hint {
-  position: fixed;
-  left: 50%;
-  bottom: 16px;
+  position: fixed; left: 50%; bottom: 16px;
   transform: translateX(-50%);
   z-index: 60;
-  display: none;
-  align-items: center;
-  gap: 8px;
+  display: none; align-items: center; gap: 8px;
   padding: 9px 16px;
   border-radius: 999px;
-  background: rgba(18, 22, 26, .88);
+  background: rgba(20, 23, 26, .88);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12);
   color: #E7ECF0;
   font-size: 12px;

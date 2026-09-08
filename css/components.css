@@ -385,6 +385,29 @@
 .dialog__actions { display: flex; gap: var(--s-3); margin-top: var(--s-8); }
 .dialog__actions .btn { flex: 1 1 0; }
 
+/* 결제 직전 주문 방식 재확인 — 다이얼로그 안에서만 쓴다 */
+.otpick { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); margin-top: var(--s-7); }
+.otpick__c {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  min-height: var(--touch);
+  padding: var(--s-6) var(--s-3);
+  border: 2px solid var(--line-2);
+  border-radius: var(--r-card);
+  background: var(--field);
+  color: var(--ink-2);
+  transition: border-color var(--d-2) var(--ease-out),
+              background-color var(--d-2) var(--ease-out),
+              color var(--d-2) var(--ease-out);
+}
+.otpick__ic { display: grid; place-items: center; width: 72px; height: 72px; }
+.otpick__ic svg { width: 100%; height: 100%; }
+.otpick__nm { font-size: var(--t-md); font-weight: 700; word-break: keep-all; }
+.otpick__c.is-on { border-color: var(--accent); background: var(--accent-tint); color: var(--accent-deep); }
+.otpick__c:focus-visible { outline: 4px solid var(--accent-deep); outline-offset: 4px; }
+
 .ring { position: relative; width: 184px; height: 184px; margin: 0 auto var(--s-6); }
 .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .ring__track { fill: none; stroke: var(--card-press); stroke-width: 10; }

@@ -7,6 +7,7 @@
 
   var Store = global.KIO_STORE;
   var UI = global.KIO_UI;
+  var L = global.KIO_I18N, tr = L.html;
   var $ = UI.$, $$ = UI.$$, esc = UI.esc, icon = UI.icon, thumb = UI.thumb;
 
   var activeCatId = null;
@@ -45,12 +46,12 @@
       ? '<img src="' + esc(s.logo) + '" alt="">'
       : esc(Store.glyphFor(s.name));
     $('#shopStore').textContent = s.name;
-    $('#shopMode').textContent = Store.session.orderType === 'takeout' ? '포장' : '매장 식사';
+    $('#shopMode').textContent = Store.session.orderType === 'takeout' ? tr('포장') : tr('매장 식사');
 
     if (!cats.length) {
       $('#tabsList').innerHTML = '';
-      $('#grid').innerHTML = empty('empty', '보여 드릴 카테고리가 없습니다',
-        '편집 모드 > 카테고리에서 추가하거나 표시를 켜 주세요.');
+      $('#grid').innerHTML = empty('empty', tr('보여 드릴 카테고리가 없습니다'),
+        tr('편집 모드 > 카테고리에서 추가하거나 표시를 켜 주세요.'));
       $('#pager').innerHTML = '';
       renderPayBar();
       return;
@@ -65,7 +66,7 @@
       return '<button class="tab' + (c.id === activeCatId ? ' is-on' : '') + '" ' +
         'data-cat="' + esc(c.id) + '" type="button" ' +
         'aria-current="' + (c.id === activeCatId ? 'true' : 'false') + '">' +
-        esc(c.name) +
+        esc(L.text(c.name)) +
         '<span class="tab__n num">' + Store.menusOf(c.id).length + '</span></button>';
     }).join('');
 
@@ -84,8 +85,8 @@
     if (page < 0) page = 0;
 
     if (!list.length) {
-      $('#grid').innerHTML = empty('empty', '이 카테고리에 메뉴가 없습니다',
-        '편집 모드 > 메뉴에서 추가할 수 있습니다.');
+      $('#grid').innerHTML = empty('empty', tr('이 카테고리에 메뉴가 없습니다'),
+        tr('편집 모드 > 메뉴에서 추가할 수 있습니다.'));
       $('#pager').innerHTML = '';
       return;
     }
@@ -98,27 +99,27 @@
     }
     $('#pager').className = 'pager' + (pages < 2 ? ' is-single' : '');
     $('#pager').innerHTML =
-      '<button class="pager__btn" data-page="-1" type="button" aria-label="이전 페이지"' +
+      tr('<button class="pager__btn" data-page="-1" type="button" aria-label="이전 페이지"') +
       (page === 0 ? ' disabled' : '') + '>' + icon('arrowL') + '</button>' +
       '<span class="pager__dots" role="status" aria-label="' + (page + 1) + ' / ' + pages + '">' + dots + '</span>' +
-      '<button class="pager__btn" data-page="1" type="button" aria-label="다음 페이지"' +
+      tr('<button class="pager__btn" data-page="1" type="button" aria-label="다음 페이지"') +
       (page >= pages - 1 ? ' disabled' : '') + '>' + icon('arrowR') + '</button>';
   }
 
   function tile(m) {
     /* 차별점 (1) 품절이어도 자리를 지킨다 */
     var out = m.soldOut
-      ? '<span class="tile__out"><span class="badge badge--soldout">품절</span></span>' : '';
+      ? tr('<span class="tile__out"><span class="badge badge--soldout">품절</span></span>') : '';
 
     return '<button class="tile' + (m.soldOut ? ' is-out' : '') + '" ' +
       'data-menu="' + esc(m.id) + '" type="button"' +
       (m.soldOut ? ' aria-disabled="true"' : '') + '>' +
       '<span class="tile__shot">' +
       (m.feature && !m.soldOut
-        ? '<span class="tile__flag"><span class="badge badge--accent">대표</span></span>' : '') +
+        ? tr('<span class="tile__flag"><span class="badge badge--accent">대표</span></span>') : '') +
       thumb(m.name, m.image, { glyph: 84, overlay: out }) +
       '</span>' +
-      '<span class="tile__nm">' + esc(m.name) + '</span>' +
+      '<span class="tile__nm">' + esc(L.text(m.name)) + '</span>' +
       '<span class="tile__price num">' + esc(Store.money(m.price)) + '</span>' +
       (m.kcal ? '<span class="tile__kcal num">' + m.kcal + ' Kcal</span>' : '') +
       '</button>';
@@ -135,24 +136,28 @@
 
     if (!bar.__built) {
       bar.innerHTML =
-        '<button class="paybar__bag" data-act="go-cart" type="button" aria-label="주문 내역">' +
-        icon('bag') + '<span class="paybar__count num" id="payCount">0</span></button>' +
+        '<div class="paybar__summary">' +
+        tr('<button class="paybar__bag" data-act="go-cart" type="button" aria-label="주문 내역">') +
+        icon('bag') + tr('<span>주문 내역</span>') +
+        '<span class="paybar__count num" id="payCount">0</span></button>' +
         '<span class="paybar__read">' +
-        '<span class="paybar__lab" id="payLab">담은 메뉴</span>' +
-        '<span class="paybar__sum num flap" id="paySum"></span>' +
-        '<span class="paybar__hint" id="payHint">메뉴를 선택해 주세요</span>' +
-        '</span>' +
+        tr('<span class="paybar__lab" id="payLab">합계</span>') +
+        '<span class="paybar__sum num flap" id="paySum" aria-hidden="true"></span>' +
+        '</span></div>' +
         '<button class="paybar__cta" data-act="go-cart" type="button">' +
-        '결제하기' + icon('arrowR') + '</button>';
+        tr('<span class="paybar__hint" id="payHint">메뉴를 선택해 주세요</span>') +
+        tr('<span class="paybar__checkout">결제하기</span>') + icon('arrowR') + '</button>';
       bar.__built = true;
     }
 
     bar.classList.toggle('is-empty', n === 0);
     $('#payCount').textContent = String(n);
-    $('#payLab').style.display = n === 0 ? 'none' : '';
-    $('#paySum').style.display = n === 0 ? 'none' : '';
-    $('#payHint').style.display = n === 0 ? '' : 'none';
-    if (n > 0) UI.flap($('#paySum'), Store.money(Store.cart.total()));
+    var total = Store.money(Store.cart.total());
+    UI.flap($('#paySum'), total);
+    $('.paybar__read', bar).setAttribute('aria-label', L.text('합계') + ' ' + total);
+    $('.paybar__bag', bar).setAttribute('aria-label', L.text('주문 내역') + ', ' + n + tr('개'));
+    $('.paybar__cta', bar).disabled = n === 0;
+
   }
 
   /* =========================================================
@@ -183,31 +188,31 @@
 
     var body = groups.map(function (g) {
       var rule = g.type === 'single'
-        ? (g.required ? '<span class="badge badge--accent">1개 필수</span>'
-                      : '<span class="badge">1개 선택</span>')
-        : '<span class="badge">여러 개 선택</span>';
+        ? (g.required ? tr('<span class="badge badge--accent">1개 필수</span>')
+                      : tr('<span class="badge">1개 선택</span>'))
+        : tr('<span class="badge">여러 개 선택</span>');
 
       var rows = g.options.map(function (o) {
         var mark = g.type === 'multi' ? 'choice__mark choice__mark--box' : 'choice__mark';
         return '<button class="choice" data-opt="' + esc(o.id) + '" type="button" aria-pressed="false">' +
           '<span class="' + mark + '">' + icon('check') + '</span>' +
-          '<span class="choice__label">' + esc(o.name) + '</span>' +
+          '<span class="choice__label">' + esc(L.text(o.name)) + '</span>' +
           '<span class="choice__price num">' +
-          (o.price > 0 ? '+' + esc(Store.money(o.price)) : '무료') +
+          (o.price > 0 ? '+' + esc(Store.money(o.price)) : tr('무료')) +
           '</span></button>';
       }).join('');
 
       return '<section class="ogroup" data-group="' + esc(g.id) + '">' +
-        '<div class="ogroup__head"><h3 class="ogroup__nm">' + esc(g.name) + '</h3>' + rule + '</div>' +
+        '<div class="ogroup__head"><h3 class="ogroup__nm">' + esc(L.text(g.name)) + '</h3>' + rule + '</div>' +
         '<div class="ogroup__list">' + rows + '</div></section>';
     }).join('');
 
     $('#itemMount').innerHTML =
       '<header class="bar">' +
-      '<button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">' +
+      tr('<button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">') +
       icon('arrowL') + '</button>' +
-      '<span class="bar__title">메뉴 선택</span>' +
-      '<button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">' +
+      tr('<span class="bar__title">메뉴 선택</span>') +
+      tr('<button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">') +
       icon('text') + '</button>' +
       '</header>' +
 
@@ -215,8 +220,8 @@
       '<div class="item__hero">' +
       thumb(m.name, m.image, { className: 'item__shot', glyph: 150 }) +
       '<div class="item__facts">' +
-      '<h2 class="item__nm">' + esc(m.name) + '</h2>' +
-      (m.desc ? '<p class="item__ds">' + esc(m.desc) + '</p>' : '') +
+      '<h2 class="item__nm">' + esc(L.text(m.name)) + '</h2>' +
+      (m.desc ? '<p class="item__ds">' + esc(L.text(m.desc)) + '</p>' : '') +
       '<div class="item__figures">' +
       '<span class="item__price num">' + esc(Store.money(m.price)) + '</span>' +
       (m.kcal ? '<span class="item__kcal num">' + m.kcal + ' Kcal</span>' : '') +
@@ -225,21 +230,21 @@
       body +
 
       '<div class="item__qty">' +
-      '<span class="item__qtylab">수량</span>' +
+      tr('<span class="item__qtylab">수량</span>') +
       '<span class="stepper">' +
-      '<button class="stepper__btn" data-qty-d="-1" type="button" aria-label="수량 줄이기">' + icon('minus') + '</button>' +
+      tr('<button class="stepper__btn" data-qty-d="-1" type="button" aria-label="수량 줄이기">') + icon('minus') + '</button>' +
       '<span class="stepper__val num" id="itemQty">1</span>' +
-      '<button class="stepper__btn" data-qty-d="1" type="button" aria-label="수량 늘리기">' + icon('plus') + '</button>' +
+      tr('<button class="stepper__btn" data-qty-d="1" type="button" aria-label="수량 늘리기">') + icon('plus') + '</button>' +
       '</span></div>' +
       '</div>' +
 
       '<footer class="item__foot">' +
       '<span class="item__sum">' +
-      '<span class="item__sumlab">합계</span>' +
+      tr('<span class="item__sumlab">합계</span>') +
       '<span class="item__sumval num flap" id="itemSum"></span>' +
       '</span>' +
-      '<button class="btn btn--quiet btn--lg" data-nav="back" type="button">취소</button>' +
-      '<button class="btn btn--primary btn--lg" data-item-add type="button">담기</button>' +
+      tr('<button class="btn btn--quiet btn--lg" data-nav="back" type="button">취소</button>') +
+      tr('<button class="btn btn--primary btn--lg" data-item-add type="button">담기</button>') +
       '</footer>';
 
     syncItem();
@@ -281,34 +286,91 @@
   function renderCart() {
     var items = Store.cart.items();
     var n = Store.cart.count();
-    $('#cartCount').textContent = n ? n + '개' : '';
+    $('#cartCount').textContent = n ? n + tr('개') : '';
 
     if (!items.length) {
-      $('#cartScroll').innerHTML = empty('cart', '담은 메뉴가 없습니다',
-        '메뉴로 돌아가 원하는 메뉴를 골라 주세요.');
+      $('#cartScroll').innerHTML = empty('cart', tr('담은 메뉴가 없습니다'),
+        tr('메뉴로 돌아가 원하는 메뉴를 골라 주세요.'));
       $('#cartFoot').innerHTML =
         '<button class="btn btn--primary btn--lg btn--block" data-act="go-menu" type="button">' +
-        '메뉴 보러 가기' + icon('arrowR') + '</button>';
+        tr('메뉴 보러 가기') + icon('arrowR') + '</button>';
       return;
     }
 
     $('#cartScroll').innerHTML =
       '<div class="cart__list">' + items.map(line).join('') + '</div>' +
       '<div class="plate cart__sum">' +
-      '<div class="srow"><span class="srow__k">주문 방식</span>' +
+      tr('<div class="srow"><span class="srow__k">주문 방식</span>') +
       '<span class="srow__v">' +
-      (Store.session.orderType === 'takeout' ? '포장' : '매장 식사') + '</span></div>' +
-      '<div class="srow"><span class="srow__k">총 수량</span>' +
-      '<span class="srow__v num">' + n + '개</span></div>' +
-      '<div class="srow srow--total"><span class="srow__k">결제 금액</span>' +
+      (Store.session.orderType === 'takeout' ? tr('포장') : tr('매장 식사')) + '</span></div>' +
+      tr('<div class="srow"><span class="srow__k">총 수량</span>') +
+      '<span class="srow__v num">' + n + tr('개</span></div>') +
+      tr('<div class="srow srow--total"><span class="srow__k">결제 금액</span>') +
       '<span class="srow__v num">' + esc(Store.money(Store.cart.total())) + '</span></div>' +
       '</div>';
 
     $('#cartFoot').innerHTML =
-      '<button class="btn btn--quiet btn--lg" data-act="cart-clear" type="button">전체 취소</button>' +
-      '<button class="btn btn--quiet btn--lg" data-act="go-menu" type="button">메뉴 더 담기</button>' +
+      tr('<button class="btn btn--quiet btn--lg" data-act="cart-clear" type="button">전체 취소</button>') +
+      tr('<button class="btn btn--quiet btn--lg" data-act="go-menu" type="button">메뉴 더 담기</button>') +
       '<button class="btn btn--primary btn--lg" data-act="go-pay" type="button">' +
-      '결제하기 · ' + esc(Store.money(Store.cart.total())) + '</button>';
+      tr('결제하기 · ') + esc(Store.money(Store.cart.total())) + '</button>';
+  }
+
+  /* =========================================================
+     결제 직전 주문 방식 재확인
+     메뉴 화면에는 뒤로 가기가 없다. 주문 유형을 잘못 골랐을 때
+     되돌릴 수 있는 마지막 지점이 여기라서, 결제로 넘기기 전에 묻는다.
+     ========================================================= */
+  var OTYPES = [
+    { id: 'dinein',  ic: 'bowl', nm: '매장에서 식사' },
+    { id: 'takeout', ic: 'bag',  nm: '포장' }
+  ];
+
+  function otpick(picked) {
+    return '<div class="otpick">' + OTYPES.map(function (o) {
+      var on = o.id === picked;
+      return '<button class="otpick__c' + (on ? ' is-on' : '') + '" ' +
+        'data-otpick="' + o.id + '" type="button" aria-pressed="' + on + '">' +
+        '<span class="otpick__ic">' + icon(o.ic) + '</span>' +
+        '<span class="otpick__nm">' + esc(L.text(o.nm)) + '</span></button>';
+    }).join('') + '</div>';
+  }
+
+  function confirmOrderType() {
+    /* 주문 유형 화면을 끈 매장은 고를 것이 없으니 그냥 통과시킨다 */
+    if (!Store.config.settings.orderTypeEnabled) return Promise.resolve(true);
+
+    var picked = Store.session.orderType === 'takeout' ? 'takeout' : 'dinein';
+
+    return UI.dialog({
+      html:
+        tr('<h2 class="dialog__title">주문 방식이 맞나요?</h2>') +
+        tr('<p class="dialog__body">결제 후에는 바꿀 수 없습니다.</p>') +
+        otpick(picked),
+      actions: [
+        { label: '취소', kind: 'quiet', value: 'cancel' },
+        { label: '이대로 결제', kind: 'primary', value: 'go' }
+      ],
+      onMount: function (d) {
+        $$('[data-otpick]', d.core).forEach(function (b) {
+          b.addEventListener('click', function () {
+            picked = b.getAttribute('data-otpick');
+            $$('[data-otpick]', d.core).forEach(function (x) {
+              var on = x.getAttribute('data-otpick') === picked;
+              x.classList.toggle('is-on', on);
+              x.setAttribute('aria-pressed', String(on));
+            });
+          });
+        });
+      }
+    }).then(function (v) {
+      if (v !== 'go') return false;
+      Store.session.orderType = picked;
+      /* 메뉴 화면은 지금 안 보이지만 헤더 표기가 남아 있다 */
+      $('#shopMode').textContent = picked === 'takeout' ? tr('포장') : tr('매장 식사');
+      renderCart();
+      return true;
+    });
   }
 
   function line(it, i) {
@@ -320,16 +382,16 @@
       thumb(m.name, m.image, { className: 'line__thumb', glyph: 66 }) +
       '<div class="line__body">' +
       '<div class="line__top">' +
-      '<h3 class="line__nm">' + esc(m.name) + '</h3>' +
-      '<button class="line__del" data-del="' + esc(it.uid) + '" type="button" aria-label="삭제">' +
+      '<h3 class="line__nm">' + esc(L.text(m.name)) + '</h3>' +
+      '<button class="line__del" data-del="' + esc(it.uid) + tr('" type="button" aria-label="삭제">') +
       icon('trash') + '</button></div>' +
-      (opts.length ? '<p class="line__opts">' + esc(opts.join(' · ')) + '</p>' : '') +
+      (opts.length ? '<p class="line__opts">' + esc(opts.map(L.text).join(' · ')) + '</p>' : '') +
       '<div class="line__foot">' +
       '<span class="stepper stepper--sm">' +
-      '<button class="stepper__btn" data-qty="' + esc(it.uid) + '" data-d="-1" type="button" aria-label="수량 줄이기">' +
+      '<button class="stepper__btn" data-qty="' + esc(it.uid) + tr('" data-d="-1" type="button" aria-label="수량 줄이기">') +
       icon('minus') + '</button>' +
       '<span class="stepper__val num">' + it.qty + '</span>' +
-      '<button class="stepper__btn" data-qty="' + esc(it.uid) + '" data-d="1" type="button" aria-label="수량 늘리기">' +
+      '<button class="stepper__btn" data-qty="' + esc(it.uid) + tr('" data-d="1" type="button" aria-label="수량 늘리기">') +
       icon('plus') + '</button></span>' +
       '<span class="line__price num">' + esc(Store.money(Store.cart.linePrice(it))) + '</span>' +
       '</div></div></div>';
@@ -339,9 +401,9 @@
      결제 (모의 — 실제 연동 없음)
      ========================================================= */
   var METHODS = [
-    { id: 'card', name: '신용 · 체크카드', desc: '카드를 리더기에 넣어 주세요', ic: 'card' },
-    { id: 'easy', name: '간편결제',        desc: '휴대폰 QR을 리더기에 대 주세요', ic: 'phone' },
-    { id: 'cash', name: '현금',            desc: '직원에게 말씀해 주세요', ic: 'cash' }
+    { id: 'card', name: tr('신용 · 체크카드'), desc: tr('카드를 리더기에 넣어 주세요'), ic: 'card' },
+    { id: 'easy', name: tr('간편결제'),        desc: tr('휴대폰 QR을 리더기에 대 주세요'), ic: 'phone' },
+    { id: 'cash', name: tr('현금'),            desc: tr('직원에게 말씀해 주세요'), ic: 'cash' }
   ];
 
   function renderPay() {
@@ -349,17 +411,17 @@
 
     $('#payMount').innerHTML =
       '<header class="bar">' +
-      '<button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">' +
+      tr('<button class="icon-btn icon-btn--sm" data-nav="back" type="button" aria-label="뒤로">') +
       icon('arrowL') + '</button>' +
-      '<span class="bar__title">결제</span>' +
-      '<button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">' +
+      tr('<span class="bar__title">결제</span>') +
+      tr('<button class="icon-btn icon-btn--sm" data-act="toggle-big" type="button" aria-label="큰 글씨 모드">') +
       icon('text') + '</button>' +
       '</header>' +
 
       '<div class="pay__head">' +
-      '<h2 class="pay__ask">어떻게 결제하시겠어요?</h2>' +
+      tr('<h2 class="pay__ask">어떻게 결제하시겠어요?</h2>') +
       '<div class="pay__amt">' +
-      '<span class="pay__amtlab">결제 금액</span>' +
+      tr('<span class="pay__amtlab">결제 금액</span>') +
       '<span class="pay__amtval num">' + esc(Store.money(Store.cart.total())) + '</span>' +
       '</div></div>' +
 
@@ -368,13 +430,13 @@
         return '<button class="method" data-method="' + p.id + '" style="--i:' + i + '" type="button">' +
           '<span class="method__ic">' + icon(p.ic) + '</span>' +
           '<span class="method__t">' +
-          '<span class="method__nm">' + esc(p.name) + '</span>' +
-          '<span class="method__ds">' + esc(p.desc) + '</span>' +
+          '<span class="method__nm">' + esc(L.text(p.name)) + '</span>' +
+          '<span class="method__ds">' + esc(L.text(p.desc)) + '</span>' +
           '</span><span class="method__go">' + icon('arrowR') + '</span></button>';
       }).join('') +
       '</div>' +
 
-      '<p class="pay__note">이 화면은 시뮬레이터입니다.<br>실제로 결제되지 않으며 카드 정보를 입력받지 않습니다.</p>';
+      tr('<p class="pay__note">이 화면은 시뮬레이터입니다.<br>실제로 결제되지 않으며 카드 정보를 입력받지 않습니다.</p>');
   }
 
   function runPayment(methodId) {
@@ -386,12 +448,12 @@
     app().lockIdle(true);
 
     var steps = methodId === 'cash'
-      ? [{ at: 0, pct: 12, st: '직원을 호출했습니다', hint: '카운터에서 현금을 받은 뒤 확인해 드립니다.' },
-         { at: 1400, pct: 62, st: '금액 확인 중', hint: '잠시만 기다려 주세요.' },
-         { at: 2600, pct: 100, st: '결제 완료', hint: '' }]
-      : [{ at: 0, pct: 10, st: methodId === 'card' ? '카드를 넣어 주세요' : 'QR을 대 주세요', hint: '리더기에서 손을 떼지 마세요.' },
-         { at: 1500, pct: 55, st: '승인 요청 중', hint: '통신 중입니다. 잠시만 기다려 주세요.' },
-         { at: 2900, pct: 100, st: '승인 완료', hint: '' }];
+      ? [{ at: 0, pct: 12, st: tr('직원을 호출했습니다'), hint: tr('카운터에서 현금을 받은 뒤 확인해 드립니다.') },
+         { at: 1400, pct: 62, st: tr('금액 확인 중'), hint: tr('잠시만 기다려 주세요.') },
+         { at: 2600, pct: 100, st: tr('결제 완료'), hint: '' }]
+      : [{ at: 0, pct: 10, st: methodId === 'card' ? tr('카드를 넣어 주세요') : tr('QR을 대 주세요'), hint: tr('리더기에서 손을 떼지 마세요.') },
+         { at: 1500, pct: 55, st: tr('승인 요청 중'), hint: tr('통신 중입니다. 잠시만 기다려 주세요.') },
+         { at: 2900, pct: 100, st: tr('승인 완료'), hint: '' }];
 
     $('#payMount').innerHTML =
       '<div class="paying">' +
@@ -430,7 +492,7 @@
     clearDoneTimer();
     if (!order) return;
 
-    var method = { card: '신용 · 체크카드', easy: '간편결제', cash: '현금' }[order.method] || '기타';
+    var method = { card: tr('신용 · 체크카드'), easy: tr('간편결제'), cash: tr('현금') }[order.method] || tr('기타');
     var d = new Date(order.at);
     var stamp = d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()) +
       ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
@@ -440,8 +502,8 @@
       '<div class="ticket">' +
       '<p class="ticket__lab">Order No.</p>' +
       '<p class="ticket__no num">' + esc(order.no) + '</p>' +
-      '<p class="ticket__msg">번호가 불리면 카운터에서 받아 가세요.<br>' +
-      (order.orderType === 'takeout' ? '포장' : '매장 식사') + ' · ' + esc(method) + '</p>' +
+      tr('<p class="ticket__msg">번호가 불리면 카운터에서 받아 가세요.<br>') +
+      (order.orderType === 'takeout' ? tr('포장') : tr('매장 식사')) + ' · ' + esc(method) + '</p>' +
       '</div>' +
 
       '<div class="plate receipt">' +
@@ -452,20 +514,20 @@
       order.lines.map(function (l) {
         return '<div class="rl">' +
           '<span class="rl__q num">' + l.qty + '</span>' +
-          '<span class="rl__n">' + esc(l.name) +
-          (l.options.length ? '<span class="rl__o">' + esc(l.options.join(' · ')) + '</span>' : '') +
+          '<span class="rl__n">' + esc(L.text(l.name)) +
+          (l.options.length ? '<span class="rl__o">' + esc(l.options.map(L.text).join(' · ')) + '</span>' : '') +
           '</span><span class="rl__p num">' + esc(Store.money(l.price)) + '</span></div>';
       }).join('') +
       '</div>' +
       '<div class="receipt__total">' +
-      '<span class="receipt__totallab">합계</span>' +
+      tr('<span class="receipt__totallab">합계</span>') +
       '<span class="receipt__totalval num">' + esc(Store.money(order.total)) + '</span>' +
       '</div></div>' +
 
       '<div class="done__foot">' +
       '<button class="btn btn--primary btn--lg btn--block" data-act="done-home" type="button">' +
-      '처음 화면으로' + icon('home') + '</button>' +
-      '<p class="done__count"><span class="done__countn num" id="doneCount">12</span> 초 후 자동으로 돌아갑니다</p>' +
+      tr('처음 화면으로') + icon('home') + '</button>' +
+      tr('<p class="done__count"><span class="done__countn num" id="doneCount">12</span> 초 후 자동으로 돌아갑니다</p>') +
       '</div></div>';
 
     /* 벽시계 기준 — 탭이 눌려도 남은 시간이 어긋나지 않는다 */
@@ -507,7 +569,7 @@
         if (!menu || menu.soldOut) return;
         if (Store.groupsOf(menu).length === 0) {
           Store.cart.add(id, 1, {});
-          UI.toast(menu.name + '을(를) 담았습니다');
+          UI.toast(L.text(menu.name) + tr('을(를) 담았습니다'));
         } else {
           openItem(id);
         }
@@ -543,7 +605,7 @@
         if (!draft) return;
         var mm = Store.getMenu(draft.menuId);
         Store.cart.add(draft.menuId, draft.qty, draft.sel);
-        UI.toast((mm ? mm.name + ' ' : '') + draft.qty + '개를 담았습니다');
+        UI.toast((mm ? L.text(mm.name) + ' ' : '') + draft.qty + tr('개를 담았습니다'));
         draft = null;
         app().go('menu', 'back');
         return;
@@ -583,6 +645,7 @@
     renderPage: renderPage,
     renderPayBar: renderPayBar,
     renderCart: renderCart,
+    confirmOrderType: confirmOrderType,
     renderPay: renderPay,
     renderDone: renderDone,
     renderItem: renderItem,

@@ -73,19 +73,25 @@ css/components.css  버튼 · 배지 · 스테퍼 · 선택행 · 폼 · 시트 
 css/customer.css    손님 화면
 css/admin.css       관리자 편집 모드
 
-js/presets.js       프리셋 · 테마 · 썸네일 팔레트. 순수 데이터
+js/presets.js       프리셋 · 테마 · 썸네일 팔레트 · 기본 사진 매핑. 순수 데이터
 js/store.js         상태 · localStorage · 스키마 정규화 · 장바구니 · 주문 · 이미지 리사이즈
+js/i18n.js          한국어 · 영어 · 일본어 · 중국어 고객 화면 번역
 js/ui.js            아이콘 · 썸네일 · 스플릿플랩 · 시트 · 다이얼로그 · 토스트
 js/customer.js      손님 화면 렌더링과 이벤트
 js/admin.js         편집 모드 렌더링과 이벤트
 js/app.js           스케일링 · 테마 · 라우팅 · 타임아웃 · 관리자 진입 · 부팅
 
-.claude/serve.js    로컬 정적 서버
+assets/images/     GPT 생성 메뉴 사진 46개 · 기존 홈 사진 · 원본 · 프롬프트 · 좌표
+assets/images/home-v2/  업종별 새 홈 사진 4개 (561×701) · 생성 원본과 좌표
+assets/flags/      한국 · 미국 · 일본 · 중국 SVG 국기
+scripts/crop-images.py  원본 시트를 JPEG로 자르는 재현 스크립트 (Pillow 필요)
+
+.claude/serve.js    로컬 정적 서버 (127.0.0.1 전용)
 .claude/audit.js    마크업/CSS 클래스 불일치 검사 (10절)
 .claude/launch.json Claude Code 프리뷰 설정
 ```
 
-로드 순서가 곧 의존 순서다: `presets → store → ui → customer → admin → app`.
+로드 순서가 곧 의존 순서다: `presets → store → ui → i18n → customer → admin → app`.
 `app.js` 가 마지막에 `boot()` 한다. 모듈 시스템은 없고 전부 IIFE 로 `window` 에 붙인다.
 
 ---
@@ -111,6 +117,11 @@ js/app.js           스케일링 · 테마 · 라우팅 · 타임아웃 · 관�
 > **홈 화면의 라우트 id 는 `idle` 인데 클래스는 `home` 이다.**
 > 이름이 안 맞는 건 역사적 이유다. `data-screen="idle"` 을 바꾸면 라우팅이 깨진다.
 
+> **`cart` 에서 결제를 누르면 곧장 `pay` 로 가지 않는다.**
+> `js/customer.js` 의 `confirmOrderType()` 이 주문 방식을 다시 묻고, 확인해야 넘어간다.
+> 메뉴 화면에는 뒤로 가기가 없어서 주문 유형을 되돌릴 지점이 여기뿐이다.
+> `settings.orderTypeEnabled` 가 false 면 묻지 않고 통과한다.
+
 뒤로 가기는 `js/app.js` 의 `BACK` 맵이 정한다. 화면 이력 스택이 아니라 고정 매핑이다.
 
 ---
@@ -132,6 +143,10 @@ js/app.js           스케일링 · 테마 · 라우팅 · 타임아웃 · 관�
   그래서 커밋 이벤트가 `'config'` 와 `'config-quiet'` 두 갈래다.
 
 이미지는 업로드 시 캔버스로 축소해 base64 로 넣는다. URL 입력도 된다.
+기본 사진은 `assets/images/`의 정적 JPEG다. `KIO_MENU_IMAGES`는 사진이 비어 있는
+기존 저장 메뉴를 이름으로 보완하며, `KIO_HERO_IMAGES`는 기본 대표 사진의 홈용
+구성을 선택한다. 직접 지정한 사진이 우선이고, 미등록 메뉴는 듀오톤으로 표시한다.
+
 축소 크기와 JPEG 품질은 `js/store.js` 의 `imageFromFile()` 에 있다.
 
 ---
@@ -172,7 +187,7 @@ config = {
 ```
 kio.config.v1   매장 구성
 kio.orders.v1   주문 로그 (상한 있음)
-kio.prefs.v1    { largeText }
+kio.prefs.v1    { largeText, language }
 kio.meta.v1     { seq, day }  주문번호 일일 시퀀스
 ```
 
@@ -278,6 +293,7 @@ node .claude/serve.js
 ```bash
 for f in js/*.js; do node --check "$f"; done   # 문법
 node .claude/audit.js                          # 마크업/CSS 클래스 불일치
+node .claude/check-i18n.js                     # 기본 프리셋 번역 누락 · 원본 보존
 ```
 
 브라우저에서는 전 흐름을 실제로 돌려 봐야 한다.
@@ -300,3 +316,18 @@ gh api repos/ZUTOMAYO1211/kio/pages/builds/latest --jq '{status,commit}'
 
 커밋 메시지는 한국어 본문으로, 무엇보다 **왜 바꿨는지**를 남긴다.
 기존 커밋들을 참고해라.
+
+## 12. 고객 언어 선택
+
+홈의 4개 언어 버튼은 `prefs.language` (`ko`, `en`, `ja`, `zh`)를 저장한다.
+언어는 새로고침과 주문 종료 후에도 유지되며, 미지원 값은 한국어로 표시한다.
+`KIO_I18N.text()`는 기본 메뉴·옵션·설명과 홈 문구를 표시할 때만 번역한다.
+구성 데이터와 주문 로그 원문, 관리자 화면은 그대로 유지한다.
+`KIO_I18N.html()`은 개발자가 작성한 고정 UI 문자열 전용이며 사용자 입력에는 쓰지 않는다.
+새로 작성한 메뉴명·설명은 사전에 없는 경우 원문으로 표시된다.
+홈의 주문 시작과 큰 글씨 버튼은 `home__actions`의 2열 그리드다.
+
+홈의 사진 영역은 고정 비율 대신 flex로 남는 세로 높이를 채운다. `home__shot`의
+썸네일은 absolute로 영역을 채우며, 직접 지정한 홈 `<img>`도 `object-fit: cover`를 쓴다.
+홈 전용 기본 사진은 `KIO_HERO_IMAGES`에서 선택하고 우선 로딩한다.
+언어 버튼은 SVG 국기와 해당 언어의 이름을 함께 표시한다.

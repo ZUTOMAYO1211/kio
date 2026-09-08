@@ -1,0 +1,315 @@
+{
+  "columns": 8,
+  "rows": 6,
+  "cells": [
+    {
+      "file": "drip-coffee.jpg",
+      "name": "오늘의 드립",
+      "row": 0,
+      "column": 0
+    },
+    {
+      "file": "americano.jpg",
+      "name": "아메리카노",
+      "row": 0,
+      "column": 1
+    },
+    {
+      "file": "cafe-latte.jpg",
+      "name": "카페 라떼",
+      "row": 0,
+      "column": 2
+    },
+    {
+      "file": "vanilla-latte.jpg",
+      "name": "바닐라 라떼",
+      "row": 0,
+      "column": 3
+    },
+    {
+      "file": "flat-white.jpg",
+      "name": "플랫 화이트",
+      "row": 0,
+      "column": 4
+    },
+    {
+      "file": "black-sesame-latte.jpg",
+      "name": "흑임자 라떼",
+      "row": 0,
+      "column": 5
+    },
+    {
+      "file": "grapefruit-ade.jpg",
+      "name": "자몽 에이드",
+      "row": 0,
+      "column": 6
+    },
+    {
+      "file": "earl-grey.jpg",
+      "name": "얼그레이 티",
+      "row": 0,
+      "column": 7
+    },
+    {
+      "file": "matcha-latte.jpg",
+      "name": "제주 말차 라떼",
+      "row": 1,
+      "column": 0
+    },
+    {
+      "file": "basque-cheesecake.jpg",
+      "name": "바스크 치즈케이크",
+      "row": 1,
+      "column": 1
+    },
+    {
+      "file": "croissant.jpg",
+      "name": "버터 크루아상",
+      "row": 1,
+      "column": 2
+    },
+    {
+      "file": "lemon-pound.jpg",
+      "name": "레몬 파운드",
+      "row": 1,
+      "column": 3
+    },
+    {
+      "file": "double-burger.jpg",
+      "name": "더블패티 클래식",
+      "row": 1,
+      "column": 4
+    },
+    {
+      "file": "cheeseburger.jpg",
+      "name": "치즈버거",
+      "row": 1,
+      "column": 5
+    },
+    {
+      "file": "bulgogi-burger.jpg",
+      "name": "불고기버거",
+      "row": 1,
+      "column": 6
+    },
+    {
+      "file": "chicken-burger.jpg",
+      "name": "스파이시 치킨",
+      "row": 1,
+      "column": 7
+    },
+    {
+      "file": "shrimp-burger.jpg",
+      "name": "새우버거",
+      "row": 2,
+      "column": 0
+    },
+    {
+      "file": "fries.jpg",
+      "name": "감자튀김",
+      "row": 2,
+      "column": 1
+    },
+    {
+      "file": "cheese-sticks.jpg",
+      "name": "치즈스틱 3조각",
+      "row": 2,
+      "column": 2
+    },
+    {
+      "file": "onion-rings.jpg",
+      "name": "어니언링",
+      "row": 2,
+      "column": 3
+    },
+    {
+      "file": "cola.jpg",
+      "name": "콜라",
+      "row": 2,
+      "column": 4
+    },
+    {
+      "file": "zero-cola.jpg",
+      "name": "제로 콜라",
+      "row": 2,
+      "column": 5
+    },
+    {
+      "file": "burger-americano.jpg",
+      "name": "아메리카노",
+      "row": 2,
+      "column": 6
+    },
+    {
+      "file": "tteokbokki.jpg",
+      "name": "옛날 떡볶이",
+      "row": 2,
+      "column": 7
+    },
+    {
+      "file": "rose-tteokbokki.jpg",
+      "name": "로제 떡볶이",
+      "row": 3,
+      "column": 0
+    },
+    {
+      "file": "assorted-fritters.jpg",
+      "name": "모둠 튀김",
+      "row": 3,
+      "column": 1
+    },
+    {
+      "file": "sundae.jpg",
+      "name": "순대 한 접시",
+      "row": 3,
+      "column": 2
+    },
+    {
+      "file": "cheese-seaweed-rolls.jpg",
+      "name": "치즈 김말이",
+      "row": 3,
+      "column": 3
+    },
+    {
+      "file": "kimchi-rice.jpg",
+      "name": "김치볶음밥",
+      "row": 3,
+      "column": 4
+    },
+    {
+      "file": "janchi-noodles.jpg",
+      "name": "잔치국수",
+      "row": 3,
+      "column": 5
+    },
+    {
+      "file": "bibim-noodles.jpg",
+      "name": "비빔국수",
+      "row": 3,
+      "column": 6
+    },
+    {
+      "file": "ramen.jpg",
+      "name": "라면",
+      "row": 3,
+      "column": 7
+    },
+    {
+      "file": "gimbap.jpg",
+      "name": "김밥 한 줄",
+      "row": 4,
+      "column": 0
+    },
+    {
+      "file": "rolled-omelette.jpg",
+      "name": "계란말이",
+      "row": 4,
+      "column": 1
+    },
+    {
+      "file": "bulgogi-lunchbox.jpg",
+      "name": "불고기 도시락",
+      "row": 4,
+      "column": 2
+    },
+    {
+      "file": "tuna-rice-ball.jpg",
+      "name": "참치마요 삼각김밥",
+      "row": 4,
+      "column": 3
+    },
+    {
+      "file": "cheese-corn-dog.jpg",
+      "name": "치즈 핫도그",
+      "row": 4,
+      "column": 4
+    },
+    {
+      "file": "cup-noodles.jpg",
+      "name": "컵라면",
+      "row": 4,
+      "column": 5
+    },
+    {
+      "file": "iced-americano.jpg",
+      "name": "아이스 아메리카노",
+      "row": 4,
+      "column": 6
+    },
+    {
+      "file": "water.jpg",
+      "name": "생수 500ml",
+      "row": 4,
+      "column": 7
+    },
+    {
+      "file": "sports-drink.jpg",
+      "name": "이온음료",
+      "row": 5,
+      "column": 0
+    },
+    {
+      "file": "strawberry-milk.jpg",
+      "name": "딸기 우유",
+      "row": 5,
+      "column": 1
+    },
+    {
+      "file": "potato-chips.jpg",
+      "name": "감자칩 오리지널",
+      "row": 5,
+      "column": 2
+    },
+    {
+      "file": "chocolate-cookies.jpg",
+      "name": "초코 쿠키",
+      "row": 5,
+      "column": 3
+    },
+    {
+      "file": "trash-bags.jpg",
+      "name": "종량제 봉투 20L",
+      "row": 5,
+      "column": 4
+    },
+    {
+      "file": "umbrella.jpg",
+      "name": "우산",
+      "row": 5,
+      "column": 5
+    },
+    {
+      "file": "cafe-hero.jpg",
+      "name": "카페 홈",
+      "row": 5,
+      "column": 6
+    },
+    {
+      "file": "burger-hero.jpg",
+      "name": "버거 홈",
+      "row": 5,
+      "column": 7
+    }
+  ],
+  "source": "source-sheet.png",
+  "xCuts": [
+    0,
+    181,
+    362,
+    543,
+    724,
+    905,
+    1086,
+    1267,
+    1448
+  ],
+  "yCuts": [
+    0,
+    210,
+    392,
+    574,
+    754,
+    920,
+    1086
+  ]
+}

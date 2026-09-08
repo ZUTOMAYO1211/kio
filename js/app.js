@@ -7,6 +7,7 @@
 
   var Store = global.KIO_STORE;
   var UI = global.KIO_UI;
+  var L = global.KIO_I18N, tr = L.html;
   var CUST = global.KIO_CUSTOMER;
   var ADMIN = global.KIO_ADMIN;
   var $ = UI.$, $$ = UI.$$;
@@ -144,10 +145,10 @@
 
     $('#homeName').textContent = s.name;
     $('#homeTag').textContent = s.tagline;
-    $('#homeTitle').innerHTML = UI.nl2br(s.headline);
+    $('#homeTitle').innerHTML = UI.nl2br(L.text(s.headline));
 
     var lede = $('#homeLede');
-    lede.textContent = s.lede;
+    lede.textContent = L.text(s.lede);
     lede.style.display = s.lede ? '' : 'none';
 
     $('#otypeStore').textContent = s.name;
@@ -162,7 +163,11 @@
     if (!pick) menus.forEach(function (m) { if (!pick && !m.soldOut) pick = m; });
     if (!pick) pick = menus[0];
 
-    shot.innerHTML = UI.thumb(pick.name, pick.image, { glyph: 190 });
+    var photo = pick.image || global.KIO_MENU_IMAGES[pick.name] || '';
+    photo = global.KIO_HERO_IMAGES[photo] || photo;
+    shot.innerHTML = UI.thumb(pick.name, photo, { glyph: 190 });
+    var image = shot.querySelector('img');
+    if (image) { image.loading = 'eager'; image.fetchPriority = 'high'; }
   }
 
   function themeField() {
@@ -271,7 +276,7 @@
     applyLargeText();
     /* 열 수가 바뀌므로 페이지 단위를 다시 계산한다 */
     if (current === 'menu') CUST.renderMenu();
-    UI.toast(Store.prefs.largeText ? '큰 글씨 모드를 켰습니다' : '큰 글씨 모드를 껐습니다');
+    UI.toast(Store.prefs.largeText ? tr('큰 글씨 모드를 켰습니다') : tr('큰 글씨 모드를 껐습니다'));
   }
 
   /* =========================================================
@@ -313,12 +318,12 @@
         '<circle class="ring__bar" id="idleRing" cx="94" cy="94" r="84" ' +
         'stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="0"></circle>' +
         '</svg><span class="ring__num num" id="idleNum">' + left + '</span></div>' +
-        '<h2 class="dialog__title">아직 계신가요?</h2>' +
-        '<p class="dialog__body"><span class="num" id="idleNum2">' + left + '</span>초 후 처음 화면으로 돌아갑니다.<br>' +
-        '담아 두신 메뉴는 그대로 두고 계속하실 수 있어요.</p>',
+        tr('<h2 class="dialog__title">아직 계신가요?</h2>') +
+        '<p class="dialog__body"><span class="num" id="idleNum2">' + left + tr('</span>초 후 처음 화면으로 돌아갑니다.<br>') +
+        tr('담아 두신 메뉴는 그대로 두고 계속하실 수 있어요.</p>'),
       actions: [
-        { label: '처음으로', kind: 'quiet', value: 'reset' },
-        { label: '계속하기', kind: 'primary', value: 'stay' }
+        { label: tr('처음으로'), kind: 'quiet', value: 'reset' },
+        { label: tr('계속하기'), kind: 'primary', value: 'stay' }
       ],
       onMount: function () {
         /* 남은 시간은 벽시계로 계산한다. 탭이 뒤로 가 타이머가 눌리면
@@ -428,27 +433,29 @@
 
       if (act === 'go-idle') {
         if (Store.cart.count() > 0) {
-          UI.confirm('주문을 취소할까요?', '담아 두신 메뉴가 모두 사라집니다.', '처음으로', 'danger')
+          UI.confirm(tr('주문을 취소할까요?'), tr('담아 두신 메뉴가 모두 사라집니다.'), tr('처음으로'), 'danger')
             .then(function (ok) { if (ok) goIdle(); });
         } else goIdle();
         return;
       }
       if (act === 'go-cart') {
-        if (Store.cart.count() === 0) { UI.toast('먼저 메뉴를 담아 주세요', 'warn'); return; }
+        if (Store.cart.count() === 0) { UI.toast(tr('먼저 메뉴를 담아 주세요'), 'warn'); return; }
         go('cart'); return;
       }
       if (act === 'go-menu') { go('menu', 'back'); return; }
       if (act === 'go-pay') {
-        if (Store.cart.count() === 0) { UI.toast('담은 메뉴가 없습니다', 'warn'); return; }
-        go('pay'); return;
+        if (Store.cart.count() === 0) { UI.toast(tr('담은 메뉴가 없습니다'), 'warn'); return; }
+        /* 주문 방식을 여기서 한 번 더 묻는다. 메뉴 화면에는 뒤로 가기가 없다 */
+        CUST.confirmOrderType().then(function (ok) { if (ok) go('pay'); });
+        return;
       }
       if (act === 'cart-clear') {
-        UI.confirm('전체 취소할까요?', '담은 메뉴를 모두 비웁니다.', '전체 취소', 'danger')
+        UI.confirm(tr('전체 취소할까요?'), tr('담은 메뉴를 모두 비웁니다.'), tr('전체 취소'), 'danger')
           .then(function (ok) {
             if (!ok) return;
             Store.cart.clear();
             CUST.renderCart();
-            UI.toast('주문 내역을 비웠습니다');
+            UI.toast(tr('주문 내역을 비웠습니다'));
           });
         return;
       }
@@ -482,7 +489,13 @@
         renderIdle();
         Store.cart.prune();
       }
-      if (what === 'prefs') applyLargeText();
+      if (what === 'prefs') {
+        applyLargeText();
+        L.apply();
+        renderIdle();
+        $('#payBar').__built = false;
+        CUST.renderPayBar();
+      }
     });
   }
 
@@ -495,6 +508,7 @@
     device = $('#device');
 
     Store.init();
+    L.init();
     UI.mountLayers();
 
     fit();

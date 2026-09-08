@@ -111,6 +111,7 @@
     var over = o.overlay || '';
     /* 깨진 이미지는 app.js 의 캡처 단계 error 리스너가 숨긴다.
        뒤에 항상 생성 아트가 깔려 있어 그대로 대체된다. */
+    image = image || global.KIO_MENU_IMAGES[name] || '';
     var img = image ? '<img src="' + esc(image) + '" alt="" loading="lazy">' : '';
     return '<span class="' + cls + '">' + img + art(name, o) + over + '</span>';
   }
@@ -119,7 +120,7 @@
     var a = Store.artFor(name);
     var style = '--art-base:' + a.base + ';--art-a:' + a.a + ';--art-b:' + a.b +
       (o && o.glyph ? ';--glyph-size:' + o.glyph + 'px' : '');
-    return '<span class="thumb__art" style="' + style + '">' +
+    return '<span class="thumb__art" aria-hidden="true" style="' + style + '">' +
       '<span class="thumb__glyph">' + esc(Store.glyphFor(name)) + '</span></span>';
   }
 
@@ -239,8 +240,10 @@
 
       var actions = (o.actions || [{ label: '확인', kind: 'primary', value: true }])
         .map(function (a) {
+          var label = global.KIO_I18N && !document.querySelector('.screen.admin.is-active, .screen.pin.is-active')
+            ? global.KIO_I18N.text(a.label) : a.label;
           return '<button class="btn btn--' + (a.kind || 'quiet') + ' btn--lg" ' +
-            'data-dlg-val="' + esc(String(a.value)) + '" type="button">' + esc(a.label) + '</button>';
+            'data-dlg-val="' + esc(String(a.value)) + '" type="button">' + esc(label) + '</button>';
         }).join('');
 
       modalLayer.innerHTML =

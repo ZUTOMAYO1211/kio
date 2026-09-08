@@ -1,0 +1,45 @@
+{
+  "source": "source-sheet.png",
+  "size": [
+    1122,
+    1402
+  ],
+  "cells": [
+    {
+      "file": "cafe.jpg",
+      "bounds": [
+        0,
+        0,
+        561,
+        701
+      ]
+    },
+    {
+      "file": "fastfood.jpg",
+      "bounds": [
+        561,
+        0,
+        1122,
+        701
+      ]
+    },
+    {
+      "file": "bunsik.jpg",
+      "bounds": [
+        0,
+        701,
+        561,
+        1402
+      ]
+    },
+    {
+      "file": "convenience.jpg",
+      "bounds": [
+        561,
+        701,
+        1122,
+        1402
+      ]
+    }
+  ]
+}

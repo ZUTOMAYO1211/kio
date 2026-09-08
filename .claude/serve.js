@@ -16,4 +16,4 @@ http.createServer((req, res) => {
       'Cache-Control': 'no-store' });
     res.end(buf);
   });
-}).listen(4173, () => console.log('serving on http://localhost:4173'));
+}).listen(4173, '127.0.0.1', () => console.log('serving on http://localhost:4173'));
